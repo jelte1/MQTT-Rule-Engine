@@ -99,6 +99,7 @@ export class MqttConnectionForm implements OnInit {
       },
       error: (err: any) => {
         console.error('Error updating MQTT Connection:', err);
+
         this.snack.open('Failed to update MQTT Connection. Please try again.', 'Dismiss', { duration: 3000 });
       }
     });
