@@ -5,11 +5,11 @@ using backend.Interfaces;
 
 namespace backend.Repositories;
 
-public class MqttMqttConnectionRepository : Repository<MqttConnection>, IMqttConnectionRepository
+public class MqttConnectionRepository : Repository<MqttConnection>, IMqttConnectionRepository
 {
     private readonly MqttRuleEngineDbContext _context;
 
-    public MqttMqttConnectionRepository(MqttRuleEngineDbContext context) : base(context)
+    public MqttConnectionRepository(MqttRuleEngineDbContext context) : base(context)
     {
         _context = context;
     }

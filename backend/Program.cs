@@ -1,4 +1,6 @@
 using backend.Database;
+using backend.Interfaces;
+using backend.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,13 @@ builder.Services.AddCors(options =>
 // Add all mapping profiles from the assembly, no need to add each one separately
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+builder.Services.AddScoped<ITopicRepository, TopicRepository>();
+builder.Services.AddScoped<IRuleRepository, RuleRepository>();
+builder.Services.AddScoped<ISensorDataRepository, SensorDataRepository>();
+builder.Services.AddScoped<IMqttConnectionRepository, MqttConnectionRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,19 +40,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
+app.UseCors("AllowAll");
 
-app.MapGet("/test-db", async (MqttRuleEngineDbContext db) =>
-{
-    try
-    {
-        await db.Database.CanConnectAsync();
-        return Results.Ok("DB connection successful");
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(ex.Message);
-    }
-});
+app.MapControllers();
 
 app.Run();

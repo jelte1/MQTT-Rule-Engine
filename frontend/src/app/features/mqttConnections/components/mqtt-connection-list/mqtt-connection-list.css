@@ -1,0 +1,13 @@
+.connection-true {
+  background-color: #109f10;
+  padding: 0.5rem;
+  border-radius: 1rem;
+  color: #efefef;
+}
+
+.connection-false {
+  background-color: #fd3636;
+  padding: 0.5rem;
+  border-radius: 1rem;
+  color: #efefef;
+}
