@@ -1,5 +1,5 @@
 using AutoMapper;
-using backend.Controllers.DTOs.MqttConnection;
+using backend.DTOs.MqttConnection;
 using backend.Entities;
 using backend.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +17,6 @@ public class MqttConnectionsController : ControllerBase
     {
         _mqttConnectionRepository = mqttConnectionRepository;
         _mapper = mapper;
-
     }
     
     // GET: api/mqttconnections

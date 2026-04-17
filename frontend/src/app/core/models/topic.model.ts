@@ -17,7 +17,16 @@ export interface Topic {
   description?: string;
   direction: TopicDirection;
   dataFormat: DataFormat;
+  createdAt: string;
   deviceId: number;
   deviceName: string;
-  createdAt: string;
+}
+
+export interface CreateTopic {
+  name: string;
+  topicPath: string;
+  description: string;
+  direction: TopicDirection;
+  dataFormat: DataFormat;
+  deviceId: number;
 }

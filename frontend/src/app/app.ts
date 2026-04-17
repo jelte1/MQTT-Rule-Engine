@@ -1,6 +1,6 @@
-import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {MatSidenav, MatSidenavContent, MatSidenavModule} from '@angular/material/sidenav';
+import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatListModule} from '@angular/material/list';
 import {MatIconModule} from '@angular/material/icon';
@@ -25,7 +25,7 @@ export class App implements OnInit {
 
   navItems = [
     { label: 'Dashboard', icon: 'home', route: '/home' },
-    { label: 'Mqtt Connections', icon: 'cable', route: '/mqttconnections' },
+    { label: 'MQTT Connections', icon: 'cable', route: '/mqttconnections' },
     { label: 'Devices', icon: 'devices', route: '/devices' },
     { label: 'Topics', icon: 'folder', route: '/topics' },
     { label: 'Rules', icon: 'rule', route: '/rules' },

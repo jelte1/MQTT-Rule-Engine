@@ -6,7 +6,7 @@ import {MatCard} from '@angular/material/card';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormField, required} from '@angular/forms/signals';
 import {MqttConnectionService} from '../../../../core/services/mqtt-connection.service';
-import {CreateMqttConnection, UpdateMqttConnection} from '../../../../core/models/create-mqtt-connection.model';
+import {CreateMqttConnection} from '../../../../core/models/mqtt-connection.model';
 import {form} from '@angular/forms/signals';
 import {FormsModule} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';

@@ -14,4 +14,10 @@ public class TopicRepository : Repository<Topic>, ITopicRepository
         _context = context;
     }
     
+    public async Task<IEnumerable<Topic>> GetAllWithDeviceAsync()
+    {
+        var topics = await _context.Set<Topic>().Include(t => t.Device).ToListAsync();
+        return topics;
+    }
+    
 }

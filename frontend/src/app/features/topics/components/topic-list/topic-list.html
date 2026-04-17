@@ -1,1 +1,55 @@
-<p>topic-list works!</p>
+<div class="page-header" >
+  <h1>Topics</h1>
+  <button mat-raised-button color="primary" routerLink="/topics/new">
+    <mat-icon>add</mat-icon> Add topic
+  </button>
+</div>
+
+<mat-card>
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  } @else if (topics().length === 0) {
+    <p class="no-connections">No Topics configured. Add one to get started.</p>
+  } @else {
+    <table mat-table class="mat-table" [dataSource]="topics()">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let topic">{{ topic.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Description</th>
+        <td mat-cell *matCellDef="let topic">{{ topic.description }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="topicPath">
+        <th mat-header-cell *matHeaderCellDef>Topic Path</th>
+        <td mat-cell *matCellDef="let topic">{{ topic.topicPath }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="deviceName">
+        <th mat-header-cell *matHeaderCellDef>Device Name</th>
+        <td mat-cell *matCellDef="let topic">{{ topic.deviceName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let connection" class="actions">
+
+          <button mat-icon-button matTooltip="Edit" (click)="edit(connection.id)">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button matTooltip="Delete" color="warn" (click)="delete(connection.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+  }
+</mat-card>

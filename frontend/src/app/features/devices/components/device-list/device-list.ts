@@ -1,9 +1,73 @@
-import { Component } from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
+import {DeviceService} from '../../../../core/services/device.service';
+import {Device} from '../../../../core/models/device.model';
+import {Router, RouterLink} from "@angular/router";
+import {MatIcon} from '@angular/material/icon';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {MatCell, MatHeaderCell, MatHeaderRow, MatRow, MatTable, MatTableModule } from '@angular/material/table';
+import { CdkTableModule } from '@angular/cdk/table';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatCard} from '@angular/material/card';
 
 @Component({
   selector: 'app-device-list',
-  imports: [],
+  standalone: true,
+  imports: [
+    CdkTableModule,
+    MatTableModule,
+    MatIcon,
+    RouterLink,
+    MatButton,
+    MatProgressSpinner,
+    MatTable,
+    MatHeaderRow,
+    MatHeaderCell,
+    MatRow,
+    MatCell,
+    MatIconButton,
+    MatTooltip,
+    MatCard
+  ],
   templateUrl: './device-list.html',
   styleUrl: './device-list.css',
 })
-export class DeviceList {}
+
+export class DeviceList {
+  private deviceService = inject(DeviceService);
+  private router = inject(Router);
+
+  devices = signal<Device[]>([]);
+  loading = signal(false);
+  displayedColumns: string[] = ['name', 'description', 'connectionName', 'createdAt', 'actions'];
+
+  ngOnInit(): void {
+    this.load();
+  }
+
+  load(): void {
+    this.loading.set(true);
+
+    this.deviceService.getDevices().subscribe({
+      next: devices => {
+        this.devices.set(devices);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loading.set(false);
+      }
+    });
+  }
+
+  edit(id: number): void {
+    this.router.navigate([`/devices/edit/${id}`]);
+  }
+
+  delete(id: number): void {
+    this.deviceService.deleteDevice(id).subscribe({
+      next: devices => {
+        this.load();
+      }
+    });
+  }
+}

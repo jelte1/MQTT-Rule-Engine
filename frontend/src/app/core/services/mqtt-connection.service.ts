@@ -2,7 +2,7 @@ import { BaseApiService } from './base-api.service';
 import { Injectable } from '@angular/core';
 import { MqttConnection } from '../models/mqtt-connection.model';
 import { Observable } from 'rxjs';
-import {CreateMqttConnection, UpdateMqttConnection} from '../models/create-mqtt-connection.model';
+import {CreateMqttConnection, UpdateMqttConnection} from '../models/mqtt-connection.model';
 
 @Injectable({ providedIn: 'root' })
 export class MqttConnectionService extends BaseApiService {

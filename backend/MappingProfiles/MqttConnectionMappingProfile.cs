@@ -1,5 +1,5 @@
 using AutoMapper;
-using backend.Controllers.DTOs.MqttConnection;
+using backend.DTOs.MqttConnection;
 using backend.Entities;
 
 namespace backend.MappingProfiles;

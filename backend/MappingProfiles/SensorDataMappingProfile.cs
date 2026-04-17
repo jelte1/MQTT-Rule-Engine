@@ -1,6 +1,8 @@
+using AutoMapper;
+
 namespace backend.MappingProfiles;
 
-public class SensorDataMappingProfile
+public class SensorDataMappingProfile : Profile
 {
     
 }

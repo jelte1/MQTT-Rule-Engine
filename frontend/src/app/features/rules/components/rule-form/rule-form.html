@@ -1,0 +1,86 @@
+<div class="page-header">
+  <h1>{{ isEditMode() ? 'Edit Rule' : 'Create new Rule' }}</h1>
+</div>
+
+<mat-card>
+  <form (ngSubmit)="submit()">
+    <mat-form-field class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput placeholder="cool name" [formField]="ruleForm.name">
+    </mat-form-field>
+
+    <mat-form-field class="full-width">
+      <mat-label>Description</mat-label>
+      <input matInput placeholder="cool description" [formField]="ruleForm.description">
+    </mat-form-field>
+
+    <h3>IF (Condition)</h3>
+
+    <mat-form-field class="full-width">
+      <mat-label>Topic</mat-label>
+      <mat-select [formField]="ruleForm.conditionTopicId">
+        @for (t of topics; track t.id) {
+          <mat-option [value]="t.id">{{ t.name }} ({{ t.topicPath }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field class="flex-grow">
+        <mat-label>Field (JSON key, optional)</mat-label>
+        <input matInput [formField]="ruleForm.conditionField" placeholder="temperature">
+      </mat-form-field>
+
+      <mat-form-field class="operator-field">
+        <mat-label>Operator</mat-label>
+        <mat-select [formField]="ruleForm.operator">
+          <mat-option [value]="0">Greater than</mat-option>
+          <mat-option [value]="1">Less than</mat-option>
+          <mat-option [value]="2">Greater than or equal</mat-option>
+          <mat-option [value]="3">Less than or equal</mat-option>
+          <mat-option [value]="4">Equal</mat-option>
+          <mat-option [value]="5">Not Equal</mat-option>
+          <mat-option [value]="6">Contains</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field class="flex-grow">
+        <mat-label>Value</mat-label>
+        <input matInput [formField]="ruleForm.conditionValue" placeholder="25">
+      </mat-form-field>
+    </div>
+
+    <h3>THEN (Action)</h3>
+
+    <mat-form-field class="full-width">
+      <mat-label>Action Topic</mat-label>
+      <mat-select [formField]="ruleForm.actionTopicId">
+        @for (t of topics; track t.id) {
+          <mat-option [value]="t.id">{{ t.name }} ({{ t.topicPath }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field class="flex-grow">
+        <mat-label>Field (JSON key, optional)</mat-label>
+        <input matInput [formField]="ruleForm.actionField" placeholder="state">
+      </mat-form-field>
+
+      <mat-form-field class="flex-grow">
+        <mat-label>Value to Publish</mat-label>
+        <input matInput [formField]="ruleForm.actionValue" placeholder="ON">
+      </mat-form-field>
+    </div>
+
+    <div class="slider-row">
+      <mat-slide-toggle [formField]="ruleForm.isActive">Active</mat-slide-toggle>
+    </div>
+
+    <div class="form-actions">
+      <button mat-raised-button color="primary" [disabled]="ruleForm().invalid()">{{ isEditMode() ? 'Edit' : 'Create' }}</button>
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+    </div>
+
+  </form>
+</mat-card>
