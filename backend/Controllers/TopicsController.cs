@@ -2,12 +2,14 @@ using AutoMapper;
 using backend.DTOs.Topic;
 using backend.Entities;
 using backend.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TopicsController: ControllerBase
 {
     private readonly ITopicRepository _topicRepository;

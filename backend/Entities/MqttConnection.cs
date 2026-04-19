@@ -19,4 +19,6 @@ public class MqttConnection
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public ICollection<Device> Devices { get; set; } = new List<Device>();
+    public string? UserId { get; set; } = string.Empty;
+    public User? User { get; set; } = null!;
 }

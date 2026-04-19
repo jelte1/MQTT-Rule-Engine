@@ -1,12 +1,14 @@
 using AutoMapper;
 using backend.DTOs.SensorData;
 using backend.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SensorDataController : ControllerBase
 {
     private readonly ISensorDataRepository _sensorDataRepository;

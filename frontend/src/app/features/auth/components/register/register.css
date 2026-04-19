@@ -1,0 +1,54 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 1rem;
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.login-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--mat-sys-primary);
+  margin-bottom: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.login-btn {
+  margin-top: 0.5rem;
+  height: 48px;
+  font-size: 1rem;
+}
+
+.register-link {
+  text-align: center;
+  width: 100%;
+  color: var(--mat-sys-on-surface-variant);
+
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

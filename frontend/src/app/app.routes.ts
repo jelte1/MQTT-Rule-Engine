@@ -8,19 +8,25 @@ import {TopicList} from './features/topics/components/topic-list/topic-list';
 import {DeviceForm} from './features/devices/components/device-form/device-form';
 import {TopicForm} from './features/topics/components/topic-form/topic-form';
 import {RuleForm} from './features/rules/components/rule-form/rule-form';
+import {Login} from './features/auth/components/login/login';
+import {Register} from './features/auth/components/register/register';
+import {authGuard} from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: 'home', component: Dashboard },
-  { path: 'mqttconnections', component: MqttConnectionList },
-  { path: 'mqttconnections/new', component: MqttConnectionForm },
-  { path: 'mqttconnections/edit/:id', component: MqttConnectionForm },
-  { path: 'devices', component: DeviceList },
-  { path: 'devices/new', component: DeviceForm },
-  { path: 'devices/edit/:id', component: DeviceForm },
-  { path: 'topics', component: TopicList },
-  { path: 'topics/new', component: TopicForm },
-  { path: 'topics/edit/:id', component: TopicForm },
-  { path: 'rules', component: RuleList },
-  { path: 'rules/new', component: RuleForm },
-  { path: 'rules/edit/:id', component: RuleForm },
+  { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
+  { path: 'mqttconnections', component: MqttConnectionList, canActivate: [authGuard] },
+  { path: 'mqttconnections/new', component: MqttConnectionForm, canActivate: [authGuard] },
+  { path: 'mqttconnections/edit/:id', component: MqttConnectionForm, canActivate: [authGuard] },
+  { path: 'devices', component: DeviceList, canActivate: [authGuard] },
+  { path: 'devices/new', component: DeviceForm, canActivate: [authGuard] },
+  { path: 'devices/edit/:id', component: DeviceForm, canActivate: [authGuard] },
+  { path: 'topics', component: TopicList, canActivate: [authGuard] },
+  { path: 'topics/new', component: TopicForm, canActivate: [authGuard] },
+  { path: 'topics/edit/:id', component: TopicForm, canActivate: [authGuard] },
+  { path: 'rules', component: RuleList, canActivate: [authGuard] },
+  { path: 'rules/new', component: RuleForm, canActivate: [authGuard] },
+  { path: 'rules/edit/:id', component: RuleForm, canActivate: [authGuard] },
+  { path: '', component: Login },
+  { path: 'login', component: Login },
+  { path: 'register', component: Register },
 ];

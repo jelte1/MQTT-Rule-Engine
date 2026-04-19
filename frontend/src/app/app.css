@@ -5,3 +5,7 @@ mat-sidenav-container {
 .active {
   background: rgba(0, 0, 0, 0.1);
 }
+
+.toolbar-spacer {
+  flex: 1;
+}

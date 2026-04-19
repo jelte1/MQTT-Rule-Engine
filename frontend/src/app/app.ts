@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
-import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {Router, RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatListModule} from '@angular/material/list';
@@ -9,6 +9,8 @@ import {MatTooltip} from '@angular/material/tooltip';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {map} from 'rxjs';
+import {AuthService} from './core/services/auth.service';
+import {Device} from './core/models/device.model';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +26,7 @@ export class App implements OnInit {
   protected readonly title = signal('frontend');
 
   navItems = [
-    { label: 'Dashboard', icon: 'home', route: '/home' },
+    { label: 'Dashboard', icon: 'home', route: '/dashboard' },
     { label: 'MQTT Connections', icon: 'cable', route: '/mqttconnections' },
     { label: 'Devices', icon: 'devices', route: '/devices' },
     { label: 'Topics', icon: 'folder', route: '/topics' },
@@ -32,6 +34,8 @@ export class App implements OnInit {
   ];
 
   private breakpointObserver = inject(BreakpointObserver);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   sidenavOpened = signal(true);
 
@@ -51,4 +55,14 @@ export class App implements OnInit {
       this.sidenavOpened.set(false);
     }
   }
+
+  isLoggedIn() {
+    return this.authService.isLoggedIn();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
 }

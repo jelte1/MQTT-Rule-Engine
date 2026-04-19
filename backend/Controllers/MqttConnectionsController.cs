@@ -2,12 +2,14 @@ using AutoMapper;
 using backend.DTOs.MqttConnection;
 using backend.Entities;
 using backend.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class MqttConnectionsController : ControllerBase
 {
     private readonly IMqttConnectionRepository _mqttConnectionRepository;

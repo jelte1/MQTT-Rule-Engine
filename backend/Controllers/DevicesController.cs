@@ -2,12 +2,14 @@ using AutoMapper;
 using backend.DTOs.Device;
 using backend.Entities;
 using backend.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class DevicesController : ControllerBase
 {
     private readonly IDeviceRepository _deviceRepository;

@@ -1,10 +1,11 @@
 using System.Reflection;
 using backend.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace backend.Database;
 
-public class MqttRuleEngineDbContext : DbContext
+public class MqttRuleEngineDbContext : IdentityDbContext<User>
 {
     public MqttRuleEngineDbContext(DbContextOptions<MqttRuleEngineDbContext> options) : base(options) { }
 
