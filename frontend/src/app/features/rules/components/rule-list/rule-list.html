@@ -7,9 +7,11 @@
 
 <mat-card>
   @if (loading()) {
-    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <mat-progress-spinner mode="indeterminate"/>
   } @else if (rules().length === 0) {
-    <p class="no-connections">No rules configured. Add one to get started.</p>
+    <mat-card-content>
+      <p class="no-connections">No rules configured. Add one to get started.</p>
+    </mat-card-content>
   } @else {
     <table mat-table class="mat-table" [dataSource]="rules()">
       <ng-container matColumnDef="name">
@@ -24,7 +26,7 @@
 
       <ng-container matColumnDef="createdAt">
         <th mat-header-cell *matHeaderCellDef>Created At</th>
-        <td mat-cell *matCellDef="let rule">{{ rule.createdAt }}</td>
+        <td mat-cell *matCellDef="let rule">{{ rule.createdAt | refactorDate }}</td>
       </ng-container>
 
       <ng-container matColumnDef="isActive">

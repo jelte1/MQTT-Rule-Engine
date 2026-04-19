@@ -3,7 +3,7 @@ import {TopicService} from '../../../../core/services/topic.service';
 import {Router, RouterLink} from '@angular/router';
 import {Topic} from '../../../../core/models/topic.model';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MatCard} from '@angular/material/card';
+import {MatCard, MatCardContent} from '@angular/material/card';
 import {
   MatCell,
   MatCellDef,
@@ -36,7 +36,8 @@ import {MatTooltip} from '@angular/material/tooltip';
     MatTable,
     MatTooltip,
     RouterLink,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    MatCardContent
   ],
   templateUrl: './topic-list.html',
   styleUrl: './topic-list.css',

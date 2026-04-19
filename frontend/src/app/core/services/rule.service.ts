@@ -15,7 +15,6 @@ export class RuleService extends BaseApiService {
   }
 
   createRule(dto: CreateRule): Observable<Rule> {
-    console.log(dto);
     return this.http.post<Rule>(`${this.apiUrl}/rules`, dto);
   }
 

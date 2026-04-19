@@ -15,7 +15,6 @@ export class TopicService extends BaseApiService {
   }
 
   createTopic(dto: CreateTopic): Observable<Topic> {
-    console.log(dto);
     return this.http.post<Topic>(`${this.apiUrl}/topics`, dto);
   }
 

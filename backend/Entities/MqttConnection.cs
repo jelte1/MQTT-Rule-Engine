@@ -5,7 +5,7 @@ namespace backend.Entities;
 public class MqttConnection
 {
     public int Id { get; set; }
-    [MaxLength(20)]
+    [MaxLength(50)]
     public string Name { get; set; } = string.Empty;
     [MaxLength(50)]
     public string Host { get; set; } = string.Empty;

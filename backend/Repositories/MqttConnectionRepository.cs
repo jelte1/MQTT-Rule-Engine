@@ -16,7 +16,7 @@ public class MqttConnectionRepository : Repository<MqttConnection>, IMqttConnect
 
     public async Task<IEnumerable<MqttConnection>> GetActiveAsync()
     {
-        var connections = await _context.Set<MqttConnection>().Where(c => c.IsActive).ToListAsync();
+        var connections = await _context.MqttConnections.Where(c => c.IsActive).ToListAsync();
         return connections;
     }
 }

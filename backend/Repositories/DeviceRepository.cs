@@ -16,7 +16,7 @@ public class DeviceRepository : Repository<Device>, IDeviceRepository
     
     public async Task<IEnumerable<Device>> GetAllWithConnectionAsync()
     {
-        var devices = await _context.Set<Device>().Include(d => d.MqttConnection).ToListAsync();
+        var devices = await _context.Devices.Include(d => d.MqttConnection).ToListAsync();
         return devices;
     }
 }

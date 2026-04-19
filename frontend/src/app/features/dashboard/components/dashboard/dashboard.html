@@ -1,1 +1,57 @@
-<p>dashboard works!</p>
+<div class="page-header" >
+  <h1>Dashboard</h1>
+</div>
+
+<mat-card>
+  <mat-card-content>
+    <p>Welcome to the Dashboard.
+      Use the navigation menu to manage your MQTT connections, devices, topics, and rules.</p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      Latest sensor data
+    </mat-card-title>
+
+    <mat-card-subtitle>
+      See real-time updates from your devices
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (loading()) {
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    } @else if (sensorData().length === 0) {
+      <mat-card-content>
+        <p class="no-connections">No data received yet...</p>
+      </mat-card-content>
+    } @else {
+      <table mat-table class="mat-table" [dataSource]="sensorData()">
+        <ng-container matColumnDef="topicName">
+          <th mat-header-cell *matHeaderCellDef>Topic name</th>
+          <td mat-cell *matCellDef="let sensorData">{{ sensorData.topicName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="topicPath">
+          <th mat-header-cell *matHeaderCellDef>Topic path</th>
+          <td mat-cell *matCellDef="let sensorData">{{ sensorData.topicPath }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="rawPayload">
+          <th mat-header-cell *matHeaderCellDef>Payload</th>
+          <td mat-cell *matCellDef="let sensorData">{{ sensorData.rawPayload }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="receivedAt">
+          <th mat-header-cell *matHeaderCellDef>Recieved at</th>
+          <td mat-cell *matCellDef="let sensorData">{{ sensorData.receivedAt | refactorDate }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    }
+  </mat-card-content>
+</mat-card>

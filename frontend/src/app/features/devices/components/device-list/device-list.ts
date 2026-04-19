@@ -8,7 +8,8 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatCell, MatHeaderCell, MatHeaderRow, MatRow, MatTable, MatTableModule } from '@angular/material/table';
 import { CdkTableModule } from '@angular/cdk/table';
 import {MatTooltip} from '@angular/material/tooltip';
-import {MatCard} from '@angular/material/card';
+import {MatCard, MatCardContent} from '@angular/material/card';
+import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
 
 @Component({
   selector: 'app-device-list',
@@ -27,7 +28,9 @@ import {MatCard} from '@angular/material/card';
     MatCell,
     MatIconButton,
     MatTooltip,
-    MatCard
+    MatCard,
+    RefactorDatePipe,
+    MatCardContent
   ],
   templateUrl: './device-list.html',
   styleUrl: './device-list.css',

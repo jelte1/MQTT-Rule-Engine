@@ -8,7 +8,7 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatCell, MatHeaderCell, MatHeaderRow, MatRow, MatTable, MatTableModule } from '@angular/material/table';
 import { CdkTableModule } from '@angular/cdk/table';
 import {MatTooltip} from '@angular/material/tooltip';
-import {MatCard} from '@angular/material/card';
+import {MatCard, MatCardContent} from '@angular/material/card';
 
 @Component({
   selector: 'app-mqtt-connection-list',
@@ -27,7 +27,8 @@ import {MatCard} from '@angular/material/card';
     MatCell,
     MatIconButton,
     MatTooltip,
-    MatCard
+    MatCard,
+    MatCardContent
   ],
   templateUrl: './mqtt-connection-list.html',
   styleUrl: './mqtt-connection-list.css',

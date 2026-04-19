@@ -7,9 +7,11 @@
 
 <mat-card>
   @if (loading()) {
-    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+    <mat-progress-spinner mode="indeterminate"/>
   } @else if (mqttConnections().length === 0) {
+    <mat-card-content>
       <p class="no-connections">No connections configured. Add one to get started.</p>
+    </mat-card-content>
   } @else {
       <table mat-table class="mat-table" [dataSource]="mqttConnections()">
         <ng-container matColumnDef="name">

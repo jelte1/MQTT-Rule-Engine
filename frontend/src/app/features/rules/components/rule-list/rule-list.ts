@@ -3,7 +3,7 @@ import {RuleService} from '../../../../core/services/rule.service';
 import {Router, RouterLink} from '@angular/router';
 import {Rule} from '../../../../core/models/rule.model';
 import {MatButton, MatIconButton} from '@angular/material/button';
-import {MatCard} from '@angular/material/card';
+import {MatCard, MatCardContent} from '@angular/material/card';
 import {
   MatCell,
   MatCellDef,
@@ -16,6 +16,7 @@ import {
 import {MatIcon} from '@angular/material/icon';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatTooltip} from '@angular/material/tooltip';
+import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
 
 @Component({
   selector: 'app-rule-list',
@@ -36,7 +37,9 @@ import {MatTooltip} from '@angular/material/tooltip';
     MatTable,
     MatTooltip,
     RouterLink,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    RefactorDatePipe,
+    MatCardContent
   ],
   templateUrl: './rule-list.html',
   styleUrl: './rule-list.css',
@@ -59,7 +62,6 @@ export class RuleList {
 
     this.ruleService.getRules().subscribe({
       next: rules => {
-        console.log(rules);
         this.rules.set(rules);
         this.loading.set(false);
       },

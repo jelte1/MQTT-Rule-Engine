@@ -14,6 +14,6 @@ public class MqttConnectionMappingProfile : Profile
             {
                 opt.PreCondition((src, ctx) => !string.IsNullOrEmpty(src.Password));
                 opt.MapFrom(src => src.Password);
-            });
+            }).ReverseMap();
     }
 }

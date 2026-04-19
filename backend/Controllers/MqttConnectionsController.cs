@@ -12,11 +12,13 @@ public class MqttConnectionsController : ControllerBase
 {
     private readonly IMqttConnectionRepository _mqttConnectionRepository;
     private readonly IMapper _mapper;
+    private readonly IMqttClientManager _mqttClientManager;
     
-    public MqttConnectionsController(IMqttConnectionRepository mqttConnectionRepository, IMapper mapper)
+    public MqttConnectionsController(IMqttConnectionRepository mqttConnectionRepository, IMapper mapper,  IMqttClientManager mqttClientManager)
     {
         _mqttConnectionRepository = mqttConnectionRepository;
         _mapper = mapper;
+        _mqttClientManager = mqttClientManager;
     }
     
     // GET: api/mqttconnections
@@ -67,6 +69,20 @@ public class MqttConnectionsController : ControllerBase
         
         _mapper.Map(dto, mqttConnection);
         await _mqttConnectionRepository.SaveChangesAsync();
+        
+        await _mqttClientManager.Disconnect(id);
+
+        if (mqttConnection.IsActive)
+        {
+            try
+            {
+                await _mqttClientManager.Connect(mqttConnection);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
         
         return Ok(_mapper.Map<MqttConnectionDto>(mqttConnection));
     }
