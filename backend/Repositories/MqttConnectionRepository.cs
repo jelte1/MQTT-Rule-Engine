@@ -19,4 +19,10 @@ public class MqttConnectionRepository : Repository<MqttConnection>, IMqttConnect
         var connections = await _context.MqttConnections.Where(c => c.IsActive).ToListAsync();
         return connections;
     }
+
+    public async Task<IEnumerable<MqttConnection>> GetAllByUserId(string userId)
+    {
+        var connections = await _context.MqttConnections.Where(c => c.UserId == userId).ToListAsync();
+        return connections;
+    }
 }

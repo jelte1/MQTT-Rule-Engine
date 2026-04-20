@@ -62,6 +62,7 @@ export class App implements OnInit {
 
   logout(): void {
     this.authService.logout();
+    this.sidenavOpened.set(false);
     this.router.navigate(['/login']);
   }
 
