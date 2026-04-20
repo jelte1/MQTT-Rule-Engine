@@ -63,15 +63,20 @@ export class TopicForm implements OnInit {
       this.id.set(+paramId);
       this.isEditMode.set(true);
 
-      this.topicService.getTopic(+paramId).subscribe(data => {
-        this.topicModel.set({
-          name: data.name,
-          topicPath: data.topicPath,
-          description: data.description ?? '',
-          direction: data.direction,
-          dataFormat: data.dataFormat,
-          deviceId: data.deviceId,
-        });
+      this.topicService.getTopic(+paramId).subscribe({
+        next: data => {
+          this.topicModel.set({
+            name: data.name,
+            topicPath: data.topicPath,
+            description: data.description ?? '',
+            direction: data.direction,
+            dataFormat: data.dataFormat,
+            deviceId: data.deviceId,
+          });
+        },
+        error: () => {
+          this.router.navigate(['/topics']);
+        }
       });
     }
   }

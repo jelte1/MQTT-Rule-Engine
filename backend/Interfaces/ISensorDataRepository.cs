@@ -5,5 +5,5 @@ namespace backend.Interfaces;
 
 public interface ISensorDataRepository : IRepository<SensorData>
 {
-    Task<IEnumerable<SensorData>> GetLatest(int count);
+    Task<IEnumerable<SensorData>> GetLatest(int count, string userId);
 }

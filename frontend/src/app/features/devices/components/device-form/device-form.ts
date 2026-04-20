@@ -59,12 +59,17 @@ export class DeviceForm implements OnInit {
       this.id.set(+paramId);
       this.isEditMode.set(true);
 
-      this.deviceService.getDevice(+paramId).subscribe(data => {
-        this.deviceModel.set({
-          name: data.name,
-          description: data.description ?? '',
-          mqttConnectionId: data.mqttConnectionId,
-        });
+      this.deviceService.getDevice(+paramId).subscribe({
+        next: data => {
+          this.deviceModel.set({
+            name: data.name,
+            description: data.description ?? '',
+            mqttConnectionId: data.mqttConnectionId,
+          });
+        },
+        error: () => {
+          this.router.navigate(['/devices']);
+        }
       });
     }
   }

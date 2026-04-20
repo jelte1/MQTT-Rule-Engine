@@ -15,9 +15,18 @@ public class SensorDataRepository : Repository<SensorData>, ISensorDataRepositor
         _context = context;
     }
     
-    public async Task<IEnumerable<SensorData>> GetLatest(int count)
+    private IQueryable<SensorData> UserQuery(string userId)
     {
-        var sensorData = await _context.SensorData
+        return _context.SensorData
+            .Include(s => s.Topic)
+            .ThenInclude(t => t.Device)
+            .ThenInclude(d => d.MqttConnection)
+            .Where(t => t.Topic.Device.MqttConnection.UserId == userId);
+    }
+    
+    public async Task<IEnumerable<SensorData>> GetLatest(int count, string userId)
+    {
+        var sensorData = await UserQuery(userId)
             .OrderByDescending(sd => sd.ReceivedAt)
             .Take(count)
             .Include(sd => sd.Topic)

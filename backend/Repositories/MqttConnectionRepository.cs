@@ -13,6 +13,18 @@ public class MqttConnectionRepository : Repository<MqttConnection>, IMqttConnect
     {
         _context = context;
     }
+    
+    private IQueryable<MqttConnection> UserQuery(string userId)
+    {
+        return _context.MqttConnections
+            .Where(c => c.UserId == userId);
+    }
+    
+    public async Task<MqttConnection?> GetByIdAndUserIdAsync(int id, string userId)
+    {
+        return await UserQuery(userId)
+            .FirstOrDefaultAsync(t => t.Id == id);
+    }
 
     public async Task<IEnumerable<MqttConnection>> GetActiveAsync()
     {
@@ -22,7 +34,7 @@ public class MqttConnectionRepository : Repository<MqttConnection>, IMqttConnect
 
     public async Task<IEnumerable<MqttConnection>> GetAllByUserId(string userId)
     {
-        var connections = await _context.MqttConnections.Where(c => c.UserId == userId).ToListAsync();
+        var connections = await UserQuery(userId).ToListAsync();
         return connections;
     }
 }

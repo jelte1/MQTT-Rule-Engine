@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using backend.DTOs.MqttConnection;
 using backend.Entities;
+using backend.Extensions;
 using backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,11 +29,11 @@ public class MqttConnectionsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MqttConnectionDto>>> GetAll()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetLoggedInUserId();
 
         if (string.IsNullOrEmpty(userId))
         {
-            return Unauthorized();
+            return NotFound();
         }
 
         var connections = await _mqttConnectionRepository.GetAllByUserId(userId);
@@ -44,7 +45,7 @@ public class MqttConnectionsController : ControllerBase
     {
         var connection = await _mqttConnectionRepository.GetByIdAsync(id);
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetLoggedInUserId();
 
         if (connection == null)
         {
@@ -65,7 +66,7 @@ public class MqttConnectionsController : ControllerBase
     {
         var mqttConnection = _mapper.Map<MqttConnection>(dto);
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetLoggedInUserId();
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -88,7 +89,7 @@ public class MqttConnectionsController : ControllerBase
     {
         var mqttConnection = await _mqttConnectionRepository.GetByIdAsync(id);
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetLoggedInUserId();
 
         if (mqttConnection == null || string.IsNullOrEmpty(userId))
         {
@@ -126,7 +127,7 @@ public class MqttConnectionsController : ControllerBase
     {
         var mqttConnection = await _mqttConnectionRepository.GetByIdAsync(id);
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetLoggedInUserId();
 
         if (mqttConnection == null)
         {

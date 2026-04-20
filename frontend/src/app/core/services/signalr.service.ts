@@ -14,12 +14,15 @@ export class SignalrService extends BaseApiService{
 
   public startConnection() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${this.apiUrl}/hubs/sensordata`)
+      .withUrl(`${this.apiUrl}/hubs/sensordata`, {
+        accessTokenFactory: () => localStorage.getItem('token') || ''
+      })
       .withAutomaticReconnect()
       .build();
 
     this.hubConnection.start()
-      .then(() => console.log('SignalR Connected'));
+      .then(() => console.log('SignalR Connected'))
+      .catch(err => console.error('SignalR Connection Error:', err));
 
     this.hubConnection.on('SensorDataUpdate', (data: SensorData) => {
       this.sensorDataSubject.next(data);

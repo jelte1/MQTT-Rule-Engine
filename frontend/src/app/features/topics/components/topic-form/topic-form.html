@@ -22,8 +22,8 @@
     <mat-form-field class="full-width">
       <mat-label>Direction</mat-label>
       <mat-select [formField]="topicForm.direction" [(value)]="selectedDirection">
-        <mat-option [value]="0">Incoming (Device -> Platform)</mat-option>
-        <mat-option [value]="1">Outgoing (Platform -> Device)</mat-option>
+        <mat-option [value]="0">Incoming (IOT Device -> Here)</mat-option>
+        <mat-option [value]="1">Outgoing (Here -> IOT Device)</mat-option>
         <mat-option [value]="2">BOTH (Two-way)</mat-option>
       </mat-select>
     </mat-form-field>

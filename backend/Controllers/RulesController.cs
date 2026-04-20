@@ -1,6 +1,7 @@
 using AutoMapper;
 using backend.DTOs.Rule;
 using backend.Entities;
+using backend.Extensions;
 using backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,13 @@ namespace backend.Controllers;
 public class RulesController : ControllerBase
 {
     private readonly IRuleRepository _ruleRepository;
+    private readonly ITopicRepository _topicRepository;
     private readonly IMapper _mapper;
     
-    public RulesController(IRuleRepository ruleRepository, IMapper mapper)
+    public RulesController(IRuleRepository ruleRepository, ITopicRepository topicRepository, IMapper mapper)
     {
         _ruleRepository = ruleRepository;
+        _topicRepository = topicRepository;
         _mapper = mapper;
     }
     
@@ -25,7 +28,14 @@ public class RulesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RuleDto>>> GetAll()
     {
-        var rules = await _ruleRepository.GetAllAsync();
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var rules = await _ruleRepository.GetAllByUserIdAsync(userId);
         return Ok(_mapper.Map<IEnumerable<RuleDto>>(rules));
     }
     
@@ -33,7 +43,14 @@ public class RulesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<RuleDto>> GetById(int id)
     {
-        var rule = await _ruleRepository.GetByIdAsync(id);
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var rule = await _ruleRepository.GetByIdAndUserIdAsync(id, userId);
         
         if (rule == null)
         {
@@ -47,6 +64,21 @@ public class RulesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<RuleDto>> CreateRule(CreateRuleDto dto)
     {
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+
+        var conditionTopic = await _topicRepository.GetByIdAndUserIdAsync(dto.ConditionTopicId, userId);
+        var actionTopic = await _topicRepository.GetByIdAndUserIdAsync(dto.ActionTopicId, userId);
+
+        if (conditionTopic == null || actionTopic == null)
+        {
+            return BadRequest("Invalid condition or action topic");
+        }
+        
         var rule = _mapper.Map<Rule>(dto);
         await _ruleRepository.AddAsync(rule);
         await _ruleRepository.SaveChangesAsync();
@@ -58,11 +90,26 @@ public class RulesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<RuleDto>> UpdateRule(int id, CreateRuleDto rule)
     {
-        var existingRule = await _ruleRepository.GetByIdAsync(id);
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var existingRule = await _ruleRepository.GetByIdAndUserIdAsync(id, userId);
         
         if (existingRule == null)
         {
             return NotFound();
+        }
+        
+        var conditionTopic = await _topicRepository.GetByIdAndUserIdAsync(rule.ConditionTopicId, userId);
+        var actionTopic = await _topicRepository.GetByIdAndUserIdAsync(rule.ActionTopicId, userId);
+
+        if (conditionTopic == null || actionTopic == null)
+        {
+            return BadRequest("Invalid condition or action topic");
         }
         
         _mapper.Map(rule, existingRule);
@@ -76,7 +123,14 @@ public class RulesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRule(int id)
     {
-        var rule = await _ruleRepository.GetByIdAsync(id);
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var rule = await _ruleRepository.GetByIdAndUserIdAsync(id, userId);
         
         if (rule == null)
         {

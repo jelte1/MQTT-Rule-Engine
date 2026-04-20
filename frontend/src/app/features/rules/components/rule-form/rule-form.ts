@@ -69,19 +69,24 @@ export class RuleForm implements OnInit {
       this.id.set(+paramId);
       this.isEditMode.set(true);
 
-      this.ruleService.getRule(+paramId).subscribe(data => {
-        this.ruleModel.set({
-          name: data.name,
-          description: data.description,
-          isActive: data.isActive,
-          conditionField: data.conditionField ?? '',
-          operator: data.operator,
-          conditionValue: data.conditionValue,
-          conditionTopicId: data.conditionTopicId,
-          actionValue: data.actionValue,
-          actionField: data.actionField,
-          actionTopicId: data.actionTopicId,
-        });
+      this.ruleService.getRule(+paramId).subscribe({
+        next: data => {
+          this.ruleModel.set({
+            name: data.name,
+            description: data.description,
+            isActive: data.isActive,
+            conditionField: data.conditionField ?? '',
+            operator: data.operator,
+            conditionValue: data.conditionValue,
+            conditionTopicId: data.conditionTopicId,
+            actionValue: data.actionValue,
+            actionField: data.actionField,
+            actionTopicId: data.actionTopicId,
+          });
+        },
+        error: () => {
+          this.router.navigate(['/rules']);
+        }
       });
     }
   }

@@ -113,7 +113,17 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                 
                 var sensorDataDto = _mapper.Map<SensorDataDto>(sensorData);
                 
-                await _sensorDataHubContext.Clients.All.SendAsync("SensorDataUpdate", sensorDataDto);
+                var userId = topic.Device.MqttConnection.UserId;
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    await _sensorDataHubContext
+                        .Clients
+                        .Group(userId)
+                        .SendAsync("SensorDataUpdate", sensorDataDto);
+                    Console.WriteLine($"Sending SensorDataUpdate to user {userId}");
+                }
+                // await _sensorDataHubContext.Clients.All.SendAsync("SensorDataUpdate", sensorDataDto);
                 
                 Console.WriteLine($"Received message on topic {topicPath}: {payload}");
             };

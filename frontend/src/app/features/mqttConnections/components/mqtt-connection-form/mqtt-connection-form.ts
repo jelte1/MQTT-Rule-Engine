@@ -53,19 +53,25 @@ export class MqttConnectionForm implements OnInit {
       this.id.set(+paramId);
       this.isEditMode.set(true);
 
-      this.mqttConnectionService.getMqttConnection(+paramId).subscribe(data => {
-        this.mqttConnectionModel.set({
-          name: data.name,
-          host: data.host,
-          port: data.port,
-          username: data.username ?? '',
-          clientId: data.clientId ?? '',
-          useTls: data.useTls,
-          isActive: data.isActive,
-          password: ''
-        });
+      this.mqttConnectionService.getMqttConnection(+paramId).subscribe({
+        next: data => {
+          this.mqttConnectionModel.set({
+            name: data.name,
+            host: data.host,
+            port: data.port,
+            username: data.username ?? '',
+            clientId: data.clientId ?? '',
+            useTls: data.useTls,
+            isActive: data.isActive,
+            password: ''
+          });
+        },
+        error: () => {
+          this.router.navigate(['/mqttconnections']);
+        }
       });
     }
+
   }
 
   mqttConnectionForm = form(this.mqttConnectionModel, (schemaPath) => {
@@ -99,7 +105,6 @@ export class MqttConnectionForm implements OnInit {
       },
       error: (err: any) => {
         console.error('Error updating MQTT Connection:', err);
-
         this.snack.open('Failed to update MQTT Connection. Please try again.', 'Dismiss', { duration: 3000 });
       }
     });

@@ -1,6 +1,7 @@
 using AutoMapper;
 using backend.DTOs.Topic;
 using backend.Entities;
+using backend.Extensions;
 using backend.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,13 @@ namespace backend.Controllers;
 public class TopicsController: ControllerBase
 {
     private readonly ITopicRepository _topicRepository;
+    private readonly IDeviceRepository _deviceRepository;
     private readonly IMapper _mapper;
     
-    public TopicsController(ITopicRepository topicRepository, IMapper mapper)
+    public TopicsController(ITopicRepository topicRepository, IDeviceRepository deviceRepository, IMapper mapper)
     {
         _topicRepository = topicRepository;
+        _deviceRepository = deviceRepository;
         _mapper = mapper;
     }
     
@@ -25,7 +28,14 @@ public class TopicsController: ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TopicDto>>> GetAll()
     {
-        var topics = await _topicRepository.GetAllWithDeviceAsync();
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var topics = await _topicRepository.GetAllByUserIdAsync(userId);
         return Ok(_mapper.Map<IEnumerable<TopicDto>>(topics));
     }
     
@@ -33,7 +43,14 @@ public class TopicsController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<TopicDto>> GetById(int id)
     {
-        var topic = await _topicRepository.GetByIdAsync(id);
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var topic = await _topicRepository.GetByIdAndUserIdAsync(id, userId);
         
         if (topic == null)
         {
@@ -47,6 +64,15 @@ public class TopicsController: ControllerBase
     [HttpPost]
     public async Task<ActionResult<TopicDto>> CreateTopic(CreateTopicDto dto)
     {
+        var userId = User.GetLoggedInUserId();
+
+        var device = await _deviceRepository.GetByIdAndUserIdAsync(dto.DeviceId, userId);
+
+        if (device == null)
+        {
+            return BadRequest("Invalid device");
+        }
+        
         var topic = _mapper.Map<Topic>(dto);
         await _topicRepository.AddAsync(topic);
         await _topicRepository.SaveChangesAsync();
@@ -58,7 +84,14 @@ public class TopicsController: ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<TopicDto>> UpdateTopic(int id, CreateTopicDto dto)
     {
-        var topic = await _topicRepository.GetByIdAsync(id);
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var topic = await _topicRepository.GetByIdAndUserIdAsync(id, userId);
         
         if (topic == null)
         {
@@ -76,7 +109,14 @@ public class TopicsController: ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTopic(int id)
     {
-        var topic = await _topicRepository.GetByIdAsync(id);
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var topic = await _topicRepository.GetByIdAndUserIdAsync(id, userId);
         
         if (topic == null)
         {
