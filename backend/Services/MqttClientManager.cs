@@ -16,14 +16,14 @@ public class MqttClientManager : IMqttClientManager, IHostedService
     private readonly SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
     private readonly IHubContext<SensorDataHub> _sensorDataHubContext;
     private readonly IMapper _mapper;
-    
+
     public MqttClientManager(IServiceScopeFactory scopeFactory, IHubContext<SensorDataHub> sensorDataHubContext, IMapper mapper)
     {
         _scopeFactory = scopeFactory;
         _sensorDataHubContext = sensorDataHubContext;
         _mapper = mapper;
     }
-    
+
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         // scope since IMqttConnectionRepository is scoped and this is singleton service
@@ -43,7 +43,7 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             }
         }
     }
-    
+
     public async Task StopAsync(CancellationToken cancellationToken)
     {
         await _lock.WaitAsync(cancellationToken);
@@ -55,8 +55,10 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                 {
                     await client.DisconnectAsync(cancellationToken: cancellationToken);
                 }
+
                 client.Dispose();
             }
+
             _clients.Clear();
         }
         finally
@@ -64,9 +66,9 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             _lock.Release();
         }
     }
-    
-   public async Task Connect(MqttConnection connection)
-   {
+
+    public async Task Connect(MqttConnection connection)
+    {
         await _lock.WaitAsync();
         try
         {
@@ -74,9 +76,9 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             {
                 if (existing.IsConnected)
                 {
-                    await existing.DisconnectAsync();    
+                    await existing.DisconnectAsync();
                 }
-                
+
                 existing.Dispose();
                 _clients.Remove(connection.Id);
             }
@@ -89,11 +91,11 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             {
                 var topicPath = e.ApplicationMessage.Topic;
                 var payload = e.ApplicationMessage.ConvertPayloadToString() ?? string.Empty;
-                
+
                 using var scope = _scopeFactory.CreateScope();
                 var sensorDataRepository = scope.ServiceProvider.GetRequiredService<ISensorDataRepository>();
                 var topicRepository = scope.ServiceProvider.GetRequiredService<ITopicRepository>();
-                
+
                 var topic = await topicRepository.GetByPathAndMqttConnectionAsync(topicPath, connection.Id);
 
                 if (topic == null)
@@ -110,9 +112,9 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                     }
                 );
                 await sensorDataRepository.SaveChangesAsync();
-                
+
                 var sensorDataDto = _mapper.Map<SensorDataDto>(sensorData);
-                
+
                 var userId = topic.Device.MqttConnection.UserId;
 
                 if (!string.IsNullOrEmpty(userId))
@@ -121,10 +123,8 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                         .Clients
                         .Group(userId)
                         .SendAsync("SensorDataUpdate", sensorDataDto);
-                    Console.WriteLine($"Sending SensorDataUpdate to user {userId}");
                 }
-                // await _sensorDataHubContext.Clients.All.SendAsync("SensorDataUpdate", sensorDataDto);
-                
+
                 Console.WriteLine($"Received message on topic {topicPath}: {payload}");
             };
 
@@ -138,9 +138,9 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             }
             else
             {
-                optionsBuilder.WithClientId("mqtt-rule-engine-" + connection.Id + "-" + Guid.NewGuid()); 
+                optionsBuilder.WithClientId("MqttRuleEngine-" + connection.Id + "-" + Guid.NewGuid());
             }
-            
+
             if (!string.IsNullOrEmpty(connection.Username))
             {
                 optionsBuilder.WithCredentials(connection.Username, connection.Password ?? string.Empty);
@@ -156,55 +156,55 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             _clients[connection.Id] = client;
 
             Console.WriteLine($"Connected to {connection.Host}:{connection.Port}");
-            
+
             await SubscribeTopics(client, connection.Id);
         }
         finally
         {
             _lock.Release();
         }
-   }
+    }
 
-   public async Task Disconnect(int mqttConnectionId)
-   {
-       await _lock.WaitAsync();
-       try
-       {
-           if (_clients.TryGetValue(mqttConnectionId, out var existing))
-           {
-               if (existing.IsConnected)
-               {
-                   await existing.DisconnectAsync();    
-               }
-                
-               existing.Dispose();
-               _clients.Remove(mqttConnectionId);
-           }
-       }
-       finally
-       {
-           _lock.Release();
-       }
-   }
-   
-   private async Task SubscribeTopics(IMqttClient client, int connectionId)
-   {
-       // scoped again since ITopicRepository is scoped and this is singleton service
-       using var scope = _scopeFactory.CreateScope();
-       var topicRepository = scope.ServiceProvider.GetRequiredService<ITopicRepository>();
-       var topics = (await topicRepository.GetIncomingByConnectionId(connectionId)).ToList();
+    public async Task Disconnect(int mqttConnectionId)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            if (_clients.TryGetValue(mqttConnectionId, out var existing))
+            {
+                if (existing.IsConnected)
+                {
+                    await existing.DisconnectAsync();
+                }
 
-       if (topics.Count == 0)
-       {
-           return;
-       }
-       
-       foreach (var topic in topics)
-       {
-           await client.SubscribeAsync(new MqttTopicFilterBuilder()
-               .WithTopic(topic.TopicPath)
-               .Build());
-           Console.WriteLine($"Subscribed to topic {topic.TopicPath}");
-       }
-   }
+                existing.Dispose();
+                _clients.Remove(mqttConnectionId);
+            }
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    private async Task SubscribeTopics(IMqttClient client, int connectionId)
+    {
+        // scoped again since ITopicRepository is scoped and this is singleton service
+        using var scope = _scopeFactory.CreateScope();
+        var topicRepository = scope.ServiceProvider.GetRequiredService<ITopicRepository>();
+        var topics = (await topicRepository.GetIncomingByConnectionId(connectionId)).ToList();
+
+        if (topics.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var topic in topics)
+        {
+            await client.SubscribeAsync(new MqttTopicFilterBuilder()
+                .WithTopic(topic.TopicPath)
+                .Build());
+            Console.WriteLine($"Subscribed to topic {topic.TopicPath}");
+        }
+    }
 }
