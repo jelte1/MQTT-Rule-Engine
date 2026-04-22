@@ -52,6 +52,8 @@ builder.Services.AddHostedService<MqttClientManager>(x => x
     .OfType<MqttClientManager>()
     .First());
 
+builder.Services.AddScoped<IRuleEngineService, RuleEngineService>();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

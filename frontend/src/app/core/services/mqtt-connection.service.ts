@@ -22,6 +22,10 @@ export class MqttConnectionService extends BaseApiService {
     return this.http.put<MqttConnection>(`${this.apiUrl}/mqttconnections/${id}`, dto);
   }
 
+  reconnectMqttConnection(id: number) : Observable<MqttConnection> {
+    return this.http.get<MqttConnection>(`${this.apiUrl}/mqttconnections/${id}/reconnect`);
+  }
+
   deleteMqttConnection(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/mqttconnections/${id}`);
   }

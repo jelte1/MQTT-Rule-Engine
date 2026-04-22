@@ -95,6 +95,7 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                 using var scope = _scopeFactory.CreateScope();
                 var sensorDataRepository = scope.ServiceProvider.GetRequiredService<ISensorDataRepository>();
                 var topicRepository = scope.ServiceProvider.GetRequiredService<ITopicRepository>();
+                var ruleEngineService = scope.ServiceProvider.GetRequiredService<IRuleEngineService>();
 
                 var topic = await topicRepository.GetByPathAndMqttConnectionAsync(topicPath, connection.Id);
 
@@ -126,11 +127,14 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                 }
 
                 Console.WriteLine($"Received message on topic {topicPath}: {payload}");
+
+                await ruleEngineService.ProcessMessage(topic.Device.MqttConnection, topic, payload);
             };
 
             var optionsBuilder = new MqttClientOptionsBuilder()
                 .WithTcpServer(connection.Host, connection.Port)
-                .WithCleanSession();
+                .WithCleanSession()
+                .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
 
             if (!string.IsNullOrEmpty(connection.ClientId))
             {
@@ -155,7 +159,24 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             await client.ConnectAsync(options);
             _clients[connection.Id] = client;
 
-            Console.WriteLine($"Connected to {connection.Host}:{connection.Port}");
+            client.DisconnectedAsync += async e =>
+            {
+                if (!e.ClientWasConnected) return;
+
+                Console.WriteLine($"Client {connection.Id} disconnected: {e.Reason}. Reconnecting in 5s...");
+                await Task.Delay(TimeSpan.FromSeconds(5));
+
+                try
+                {
+                    await client.ConnectAsync(options);
+                    await SubscribeTopics(client, connection.Id);
+                    Console.WriteLine($"Reconnected to {connection.Host}:{connection.Port}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Reconnect failed for connection {connection.Id}: {ex.Message}");
+                }
+            };
 
             await SubscribeTopics(client, connection.Id);
         }
@@ -205,6 +226,32 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                 .WithTopic(topic.TopicPath)
                 .Build());
             Console.WriteLine($"Subscribed to topic {topic.TopicPath}");
+        }
+    }
+
+    public async Task Publish(Topic topic, string payload)
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            if (_clients.TryGetValue(topic.Device.MqttConnectionId, out var client) && client.IsConnected)
+            {
+                var message = new MqttApplicationMessageBuilder()
+                    .WithTopic(topic.TopicPath)
+                    .WithPayload(payload)
+                    .Build();
+
+                await client.PublishAsync(message);
+                Console.WriteLine($"Published message to topic {topic.TopicPath}: {payload}");
+            }
+            else
+            {
+                Console.WriteLine($"Cannot publish to topic {topic.TopicPath} because MQTT client is not connected.");
+            }
+        }
+        finally
+        {
+            _lock.Release();
         }
     }
 }

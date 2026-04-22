@@ -121,6 +121,37 @@ public class MqttConnectionsController : ControllerBase
         return Ok(_mapper.Map<MqttConnectionDto>(mqttConnection));
     }
 
+    // POST: api/mqttconnections/{id}/reconnect
+    [HttpPost("{id}/reconnect")]
+    public async Task<IActionResult> ReconnectMqttConnection(int id)
+    {
+        var mqttConnection = await _mqttConnectionRepository.GetByIdAsync(id);
+
+        var userId = User.GetLoggedInUserId();
+
+        if (mqttConnection == null || string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+
+        if (mqttConnection.UserId != userId)
+        {
+            return NotFound();
+        }
+
+        try
+        {
+            await _mqttClientManager.Disconnect(id);
+            await _mqttClientManager.Connect(mqttConnection);
+            return Ok(new { message = "Reconnected successfully" });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return StatusCode(500, "Failed to reconnect to MQTT broker");
+        }
+    }
+
     // DELETE: /api/mqttconnections/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMqttConnection(int id)
