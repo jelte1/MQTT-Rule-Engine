@@ -54,16 +54,20 @@ form {
 
 .connection-true {
   background-color: #109f10;
-  padding: 0.4rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 1rem;
   color: #efefef;
   border: 2px solid #078607;
+  margin: 0.2rem 0.2rem;
+  float: left;
 }
 
 .connection-false {
   background-color: #fd3636;
-  padding: 0.4rem;
+  padding: 0.2rem 0.4rem;
   color: #efefef;
   border-radius: 1rem;
   border: 2px solid #cd2a2a;
+  margin: 0.2rem 0.2rem;
+  float: left;
 }

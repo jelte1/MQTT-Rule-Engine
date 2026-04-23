@@ -35,12 +35,19 @@
             <span [class]="'connection-' + connection.isActive">
               {{ connection.isActive ? 'Active' : 'Inactive' }}
             </span>
+            <span [class]="'connection-' + connection.isConnected">
+              {{ connection.isConnected ? 'Connected' : 'Disconnected' }}
+            </span>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let connection" class="actions">
+
+            <button mat-icon-button color="primary" matTooltip="Reconnect" (click)="reconnect(connection.id)">
+              <mat-icon>refresh</mat-icon>
+            </button>
 
             <button mat-icon-button matTooltip="Edit" (click)="edit(connection.id)">
               <mat-icon>edit</mat-icon>

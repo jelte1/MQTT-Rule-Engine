@@ -37,7 +37,14 @@ public class MqttConnectionsController : ControllerBase
         }
 
         var connections = await _mqttConnectionRepository.GetAllByUserId(userId);
-        return Ok(_mapper.Map<IEnumerable<MqttConnectionDto>>(connections));
+        var dtos = _mapper.Map<IEnumerable<MqttConnectionDto>>(connections);
+
+        foreach (var dto in dtos)
+        {
+            dto.IsConnected = _mqttClientManager.IsConnected(dto.Id);
+        }
+        
+        return Ok(dtos);
     }
 
     [HttpGet("{id}")]
@@ -56,8 +63,11 @@ public class MqttConnectionsController : ControllerBase
         {
             return NotFound();
         }
+        
+        var dto = _mapper.Map<MqttConnectionDto>(connection);
+        dto.IsConnected = _mqttClientManager.IsConnected(dto.Id);
 
-        return Ok(_mapper.Map<MqttConnectionDto>(connection));
+        return Ok(dto);
     }
 
     // POST: api/mqttconnections
@@ -129,14 +139,14 @@ public class MqttConnectionsController : ControllerBase
 
         var userId = User.GetLoggedInUserId();
 
-        if (mqttConnection == null || string.IsNullOrEmpty(userId))
+        if (mqttConnection == null || string.IsNullOrEmpty(userId) || mqttConnection.UserId != userId)
         {
             return NotFound();
         }
 
-        if (mqttConnection.UserId != userId)
+        if (!mqttConnection.IsActive)
         {
-            return NotFound();
+            return Conflict(new { message = "MQTT connection is not active" });
         }
 
         try
@@ -148,7 +158,7 @@ public class MqttConnectionsController : ControllerBase
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            return StatusCode(500, "Failed to reconnect to MQTT broker");
+            return StatusCode(502, "Failed to reconnect to MQTT broker");
         }
     }
 

@@ -1,4 +1,4 @@
-import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { HttpHandlerFn, HttpRequest} from '@angular/common/http';
 import { INTERCEPTOR_EXCLUDED_URLS } from '../constants/constants';
 
 export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn) {

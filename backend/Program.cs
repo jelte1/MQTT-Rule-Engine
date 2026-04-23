@@ -53,6 +53,7 @@ builder.Services.AddHostedService<MqttClientManager>(x => x
     .First());
 
 builder.Services.AddScoped<IRuleEngineService, RuleEngineService>();
+builder.Services.AddSingleton<IPayloadParserService, PayloadParserService>();
 
 builder.Services.AddAuthentication(options =>
 {

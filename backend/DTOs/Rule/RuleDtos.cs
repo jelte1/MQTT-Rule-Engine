@@ -25,6 +25,11 @@ public class RuleDto
     public int ActionTopicId { get; set; }
     public string ActionTopicName { get; set; } = string.Empty;
     public string ActionTopicPath { get; set; } = string.Empty;
+    
+    // Else
+    public string? ElseActionField { get; set; }
+    public string? ElseActionValue { get; set; } = string.Empty;
+    public int? ElseActionTopicId { get; set; }
 }
 
 public class CreateRuleDto
@@ -43,4 +48,8 @@ public class CreateRuleDto
     public string? ActionField { get; set; }
     public string ActionValue { get; set; } = string.Empty;
     public int ActionTopicId { get; set; }
+    // Else
+    public string? ElseActionField { get; set; }
+    public string? ElseActionValue { get; set; } = string.Empty;
+    public int? ElseActionTopicId { get; set; }
 }

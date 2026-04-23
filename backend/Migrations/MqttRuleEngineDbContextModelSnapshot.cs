@@ -268,6 +268,15 @@ namespace backend.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<string>("ElseActionField")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("ElseActionTopicId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ElseActionValue")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
@@ -284,6 +293,8 @@ namespace backend.Migrations
                     b.HasIndex("ActionTopicId");
 
                     b.HasIndex("ConditionTopicId");
+
+                    b.HasIndex("ElseActionTopicId");
 
                     b.ToTable("Rules");
                 });
@@ -503,9 +514,15 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("backend.Entities.Topic", "ElseActionTopic")
+                        .WithMany()
+                        .HasForeignKey("ElseActionTopicId");
+
                     b.Navigation("ActionTopic");
 
                     b.Navigation("ConditionTopic");
+
+                    b.Navigation("ElseActionTopic");
                 });
 
             modelBuilder.Entity("backend.Entities.SensorData", b =>

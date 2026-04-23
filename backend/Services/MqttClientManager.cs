@@ -126,8 +126,6 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                         .SendAsync("SensorDataUpdate", sensorDataDto);
                 }
 
-                Console.WriteLine($"Received message on topic {topicPath}: {payload}");
-
                 await ruleEngineService.ProcessMessage(topic.Device.MqttConnection, topic, payload);
             };
 
@@ -253,5 +251,10 @@ public class MqttClientManager : IMqttClientManager, IHostedService
         {
             _lock.Release();
         }
+    }
+
+    public bool IsConnected(int mqttConnectionId)
+    {        
+        return _clients.TryGetValue(mqttConnectionId, out var client) && client.IsConnected;
     }
 }

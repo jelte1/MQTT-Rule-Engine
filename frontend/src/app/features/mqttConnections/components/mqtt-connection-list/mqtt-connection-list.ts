@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import {MqttConnectionService} from '../../../../core/services/mqtt-connection.service';
 import {MqttConnection} from '../../../../core/models/mqtt-connection.model';
 import {Router, RouterLink} from "@angular/router";
@@ -9,6 +9,7 @@ import {MatCell, MatHeaderCell, MatHeaderRow, MatRow, MatTable, MatTableModule }
 import { CdkTableModule } from '@angular/cdk/table';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatCard, MatCardContent} from '@angular/material/card';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-mqtt-connection-list',
@@ -34,9 +35,10 @@ import {MatCard, MatCardContent} from '@angular/material/card';
   styleUrl: './mqtt-connection-list.css',
 })
 
-export class MqttConnectionList {
+export class MqttConnectionList implements OnInit {
   private mqttConnectionService = inject(MqttConnectionService);
   private router = inject(Router);
+  private snack = inject(MatSnackBar);
 
   mqttConnections = signal<MqttConnection[]>([]);
   loading = signal(false);
@@ -66,7 +68,20 @@ export class MqttConnectionList {
 
   delete(id: number): void {
     this.mqttConnectionService.deleteMqttConnection(id).subscribe({
-      next: mqttConnections => {
+      next: () => {
+        this.load();
+      }
+    });
+  }
+
+  reconnect(id: number): void {
+    this.mqttConnectionService.reconnectMqttConnection(id).subscribe({
+      next: () => {
+        this.snack.open('Reconnection successful', 'Dismiss', { duration: 3000 });
+        this.load();
+      },
+      error: (err: any) => {
+        this.snack.open('Reconnection failed: ' + err.error.message, 'Dismiss', { duration: 3000 });
         this.load();
       }
     });

@@ -8,6 +8,7 @@ export interface MqttConnection {
   useTls: boolean;
   isActive: boolean;
   createdAt: string;
+  isConnected: boolean;
 }
 
 export interface CreateMqttConnection {

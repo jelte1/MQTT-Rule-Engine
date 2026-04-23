@@ -18,6 +18,7 @@ public class RuleEngineService : IRuleEngineService
     {
         using var scope = _scopeFactory.CreateScope();
         var ruleRepository = scope.ServiceProvider.GetRequiredService<IRuleRepository>();
+        var payloadParserService = scope.ServiceProvider.GetRequiredService<IPayloadParserService>();
 
         var rules = await ruleRepository.GetActiveRulesByConditionTopic(topic.Id);
 
@@ -25,13 +26,7 @@ public class RuleEngineService : IRuleEngineService
         {
             try
             {
-                object? parsedPayload = topic.DataFormat switch
-                {
-                    DataFormat.Json => ParseJsonPayload(payload, rule.ConditionField),
-                    DataFormat.PlainText => payload,
-                    DataFormat.Numeric => double.TryParse(payload, NumberStyles.Any, CultureInfo.InvariantCulture, out var num) ? num : (double?)null,
-                    _ => null
-                };
+                var parsedPayload = payloadParserService.Parse(rule.ConditionTopic.DataFormat, payload, rule.ConditionField);
 
                 if (EvaluateCondition(rule, parsedPayload))
                 {
@@ -45,76 +40,66 @@ public class RuleEngineService : IRuleEngineService
         }
     }
 
-    private object? ParseJsonPayload(string payload, string? fieldName)
-    {
-        try
-        {
-            var json = JsonSerializer.Deserialize<JsonElement>(payload);
-
-            if (string.IsNullOrEmpty(fieldName))
-                return payload; // no field specified, use raw payload
-
-            if (json.TryGetProperty(fieldName, out var property))
-            {
-                return property.ValueKind switch
-                {
-                    JsonValueKind.Number => property.GetDouble(),
-                    JsonValueKind.String => property.GetString(),
-                    JsonValueKind.True => true,
-                    JsonValueKind.False => false,
-                    _ => property.ToString()
-                };
-            }
-
-            Console.WriteLine($"Property '{fieldName}' not found in JSON payload: {payload}");
-            return null;
-        }
-        catch (JsonException ex)
-        {
-            Console.WriteLine($"Failed to parse JSON payload: {payload}. Error: {ex.Message}");
-            return null;
-        }
-    }
-
     private bool EvaluateCondition(Rule rule, object? payload)
     {
-        var operatorr = rule.Operator switch
+        return rule.Operator switch
         {
-            ConditionOperator.Equal => (Func<object?, bool>)(p => p?.ToString() == rule.ConditionValue),
-            ConditionOperator.NotEqual => (p => p?.ToString() != rule.ConditionValue),
-            ConditionOperator.Contains => (p => p?.ToString()?.Contains(rule.ConditionValue) == true),
-            ConditionOperator.GreaterThan => (p => p is double d && double.TryParse(rule.ConditionValue, out var val) && d > val),
-            ConditionOperator.GreaterThanOrEqual => (p => p is double d && double.TryParse(rule.ConditionValue, out var val) && d >= val),
-            ConditionOperator.LessThan => (p => p is double d && double.TryParse(rule.ConditionValue, out var val) && d < val),
-            ConditionOperator.LessThanOrEqual => (p => p is double d && double.TryParse(rule.ConditionValue, out var val) && d <= val),
-            _ => null
+            ConditionOperator.Equal => IsEqual(payload, rule.ConditionValue),
+            ConditionOperator.NotEqual => !IsEqual(payload, rule.ConditionValue),
+            ConditionOperator.Contains => Contains(payload, rule.ConditionValue),
+            ConditionOperator.GreaterThan => CompareNumeric(payload, rule.ConditionValue, (a, b) => a > b),
+            ConditionOperator.GreaterThanOrEqual => CompareNumeric(payload, rule.ConditionValue, (a, b) => a >= b),
+            ConditionOperator.LessThan => CompareNumeric(payload, rule.ConditionValue, (a, b) => a < b),
+            ConditionOperator.LessThanOrEqual => CompareNumeric(payload, rule.ConditionValue, (a, b) => a <= b),
+            _ => false
         };
+    }
 
-        if (operatorr == null)
+    private bool IsEqual(object? payload, string conditionValue)
+    {
+        if (payload != null && payload?.ToString() == conditionValue)
         {
-            return false;
+            return true;
         }
+        return false;
+    }
 
-        return operatorr(payload);
+    private bool Contains(object? payload, string conditionValue)
+    {
+        if (payload != null && payload.ToString()?.Contains(conditionValue) == true)
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    private bool CompareNumeric(object? payload, string conditionValue, Func<double, double, bool> comparison)
+    {
+        if (payload is double payloadNum)
+        {
+            if (double.TryParse(conditionValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var conditionNum))
+            {
+                var result = comparison(payloadNum, conditionNum);
+                return result;
+            }
+        }
+        
+        return false;
     }
 
     private async Task ExecuteAction(Rule rule)
     {
         using var scope = _scopeFactory.CreateScope();
         var mqttClientManager = scope.ServiceProvider.GetRequiredService<IMqttClientManager>();
+        var payloadParserService = scope.ServiceProvider.GetRequiredService<IPayloadParserService>();
 
         if (rule.ActionField != null && !string.IsNullOrEmpty(rule.ActionValue))
         {
             try
             {
-                var dataformat = rule.ActionTopic.DataFormat switch
-                {
-                    DataFormat.Json => JsonSerializer.Serialize(new Dictionary<string, object> { { rule.ActionField, rule.ActionValue } }),
-                    DataFormat.Numeric => double.TryParse(rule.ActionValue, out var num) ? num.ToString() : rule.ActionValue,
-                    DataFormat.PlainText => rule.ActionValue,
-                    _ => rule.ActionValue
-                };
-                await mqttClientManager.Publish(rule.ActionTopic, dataformat);
+                var actionPayload = payloadParserService.Format(rule);
+                
+                await mqttClientManager.Publish(rule.ActionTopic, actionPayload);
             }
             catch (Exception ex)
             {

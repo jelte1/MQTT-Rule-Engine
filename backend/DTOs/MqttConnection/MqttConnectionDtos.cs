@@ -11,6 +11,7 @@ public class MqttConnectionDto
     public bool UseTls { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+    public bool IsConnected { get; set; }
 }
 
 public class CreateUpdateMqttConnectionDto
