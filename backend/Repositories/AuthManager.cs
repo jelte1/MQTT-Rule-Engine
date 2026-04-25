@@ -41,12 +41,18 @@ public class AuthManager : IAuthManager
         return result.Errors;
     }
 
-    public async Task<AuthResponseDto> Login(LoginDto loginUserDto)
+    public async Task<AuthResponseDto?> Login(LoginDto loginUserDto)
     {
         _user = await _userManager.FindByNameAsync(loginUserDto.UserName);
+
+        if (_user == null)
+        {
+            return null;
+        }
+        
         var isPasswordValid = await _userManager.CheckPasswordAsync(_user, loginUserDto.Password);
 
-        if (_user == null || isPasswordValid == false)
+        if (!isPasswordValid)
         {
             return null;
         }

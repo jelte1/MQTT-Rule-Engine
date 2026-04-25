@@ -29,4 +29,5 @@ export const routes: Routes = [
   { path: '', component: Login },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
+  { path: '**', component: Dashboard, canActivate: [authGuard] }
 ];

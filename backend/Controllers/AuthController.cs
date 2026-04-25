@@ -40,6 +40,7 @@ public class AuthController :  ControllerBase
         return Ok();
     }
 
+    // POST: /api/auth/login
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
     {
@@ -53,7 +54,7 @@ public class AuthController :  ControllerBase
         return Ok(authResponse);
     }
     
-    // POST: api/User/refreshtoken
+    // POST: api/auth/refreshtoken
     [HttpPost("refreshtoken")]
     public async Task<IActionResult> RefreshToken([FromBody] AuthResponseDto requestDto)
     {
