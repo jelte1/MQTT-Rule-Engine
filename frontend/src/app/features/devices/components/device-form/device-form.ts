@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, HostListener, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DeviceService} from '../../../../core/services/device.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -11,6 +11,8 @@ import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MqttConnection} from '../../../../core/models/mqtt-connection.model';
 import {MqttConnectionService} from '../../../../core/services/mqtt-connection.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {forkJoin, of} from 'rxjs';
 
 @Component({
   selector: 'app-device-form',
@@ -24,7 +26,8 @@ import {MqttConnectionService} from '../../../../core/services/mqtt-connection.s
     ReactiveFormsModule,
     FormField,
     MatSelect,
-    MatOption
+    MatOption,
+    MatProgressSpinner
   ],
   templateUrl: './device-form.html',
   styleUrl: './device-form.css',
@@ -40,38 +43,54 @@ export class DeviceForm implements OnInit {
   protected deviceModel = signal<CreateDevice>({
     name: '',
     description: '',
-    mqttConnectionId: 0,
+    mqttConnectionId: null,
   });
   isEditMode = signal(false);
   id = signal<number | null>(null);
+  loading = signal(false);
   mqttConnections: MqttConnection[] = [];
-  selected = null;
+
+  // quick save the current object when Ctrl+S or Cmd+S is pressed
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's' && this.isEditMode()) {
+      event.preventDefault();
+      this.submit();
+    }
+  }
 
   ngOnInit(): void {
-
-    this.mqttConnectionService.getMqttConnections().subscribe(c =>
-      this.mqttConnections = c
-    );
+    this.loading.set(true);
 
     const paramId = this.route.snapshot.paramMap.get('id');
 
     if (paramId) {
       this.id.set(+paramId);
       this.isEditMode.set(true);
-
-      this.deviceService.getDevice(+paramId).subscribe({
-        next: data => {
-          this.deviceModel.set({
-            name: data.name,
-            description: data.description ?? '',
-            mqttConnectionId: data.mqttConnectionId,
-          });
-        },
-        error: () => {
-          this.router.navigate(['/devices']);
-        }
-      });
     }
+
+    forkJoin({
+      connections: this.mqttConnectionService.getMqttConnections(),
+      device: paramId ? this.deviceService.getDevice(+paramId) : of(null)
+    }).subscribe({
+      next: ({ connections, device }) => {
+        this.mqttConnections = connections;
+
+        if (device) {
+          this.deviceModel.set({
+            name: device.name,
+            description: device.description ?? '',
+            mqttConnectionId: device.mqttConnectionId,
+          });
+        }
+
+        this.loading.set(false);
+      },
+      error: () => {
+        if (paramId) this.router.navigate(['/devices']);
+        this.loading.set(false);
+      }
+    });
   }
 
   deviceForm = form(this.deviceModel, (schemaPath) => {

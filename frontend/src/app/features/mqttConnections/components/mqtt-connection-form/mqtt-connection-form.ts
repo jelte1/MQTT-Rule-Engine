@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, HostListener, inject, OnInit, signal} from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {Router, ActivatedRoute } from '@angular/router';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
@@ -10,6 +10,7 @@ import {CreateMqttConnection} from '../../../../core/models/mqtt-connection.mode
 import {form} from '@angular/forms/signals';
 import {FormsModule} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-mqtt-connection-form',
@@ -21,7 +22,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
     MatSlideToggle,
     MatButton,
     FormField,
-    FormsModule
+    FormsModule,
+    MatProgressSpinner
   ],
   templateUrl: './mqtt-connection-form.html',
   styleUrl: './mqtt-connection-form.css',
@@ -45,33 +47,51 @@ export class MqttConnectionForm implements OnInit {
   });
   isEditMode = signal(false);
   id = signal<number | null>(null);
+  loading = signal(false);
+
+  // quick save the current object when Ctrl+S or Cmd+S is pressed
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's' && this.isEditMode()) {
+      event.preventDefault();
+      this.submit();
+    }
+  }
 
   ngOnInit(): void {
+    this.loading.set(true);
+
     const paramId = this.route.snapshot.paramMap.get('id');
 
     if (paramId) {
       this.id.set(+paramId);
       this.isEditMode.set(true);
-
-      this.mqttConnectionService.getMqttConnection(+paramId).subscribe({
-        next: data => {
-          this.mqttConnectionModel.set({
-            name: data.name,
-            host: data.host,
-            port: data.port,
-            username: data.username ?? '',
-            clientId: data.clientId ?? '',
-            useTls: data.useTls,
-            isActive: data.isActive,
-            password: ''
-          });
-        },
-        error: () => {
-          this.router.navigate(['/mqttconnections']);
-        }
-      });
     }
 
+    if (!paramId) {
+      this.loading.set(false);
+      return;
+    }
+
+    this.mqttConnectionService.getMqttConnection(+paramId).subscribe({
+      next: data => {
+        this.mqttConnectionModel.set({
+          name: data.name,
+          host: data.host,
+          port: data.port,
+          username: data.username ?? '',
+          clientId: data.clientId ?? '',
+          useTls: data.useTls,
+          isActive: data.isActive,
+          password: ''
+        });
+        this.loading.set(false);
+      },
+      error: () => {
+        this.router.navigate(['/mqttconnections']);
+        this.loading.set(false);
+      }
+    });
   }
 
   mqttConnectionForm = form(this.mqttConnectionModel, (schemaPath) => {
@@ -86,7 +106,7 @@ export class MqttConnectionForm implements OnInit {
 
   submit() {
     if (this.mqttConnectionForm().invalid()) {
-      alert("Make sure to fill in all the fields correctly.");
+      this.snack.open("Make sure to fill in all the fields correctly.", "Dismiss", { duration: 3000 });
       return;
     }
 

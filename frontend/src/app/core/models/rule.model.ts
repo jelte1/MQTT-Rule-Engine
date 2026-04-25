@@ -27,6 +27,10 @@ export interface Rule {
   actionTopicPath: string;
   actionField: string;
   actionValue: string;
+  // else
+  elseActionTopicId?: number;
+  elseActionField?: string;
+  elseActionValue?: string;
 }
 
 export interface CreateRule {
@@ -37,9 +41,13 @@ export interface CreateRule {
   conditionField: string;
   operator: ConditionOperator;
   conditionValue: string;
-  conditionTopicId: number;
+  conditionTopicId: number | null;
   // action
   actionField: string;
   actionValue: string;
-  actionTopicId: number;
+  actionTopicId: number | null;
+  // else
+  elseActionTopicId: number | null;
+  elseActionField: string;
+  elseActionValue: string;
 }

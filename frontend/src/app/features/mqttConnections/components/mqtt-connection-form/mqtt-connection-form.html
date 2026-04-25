@@ -1,48 +1,56 @@
 <div class="page-header">
-  <h1>{{ isEditMode() ? 'Edit Mqtt Connection' : 'Create new Mqtt Connection' }}</h1>
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else {
+    <h1>{{ isEditMode() ? 'Edit Mqtt Connection' : 'Create new Mqtt Connection' }}</h1>
+  }
 </div>
 
 <mat-card>
-  <form (ngSubmit)="submit()">
-    <mat-form-field class="full-width">
-      <mat-label>Name</mat-label>
-      <input matInput placeholder="A mqtt broker" [formField]="mqttConnectionForm.name">
-    </mat-form-field>
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else {
+    <form (ngSubmit)="submit()">
+      <mat-form-field class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="A mqtt broker" [formField]="mqttConnectionForm.name">
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <mat-label>Host</mat-label>
-      <input matInput placeholder="broker.something.com" [formField]="mqttConnectionForm.host">
-    </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Host</mat-label>
+        <input matInput placeholder="broker.something.com" [formField]="mqttConnectionForm.host">
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <mat-label>Port</mat-label>
-      <input matInput type="number" [formField]="mqttConnectionForm.port">
-    </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Port</mat-label>
+        <input matInput type="number" [formField]="mqttConnectionForm.port">
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <mat-label>Username</mat-label>
-      <input matInput placeholder="Optional username" [formField]="mqttConnectionForm.username">
-    </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Username</mat-label>
+        <input matInput placeholder="Optional username" [formField]="mqttConnectionForm.username">
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <mat-label>Password</mat-label>
-      <input matInput type="password" placeholder="Optional password" [formField]="mqttConnectionForm.password">
-    </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" placeholder="Optional password" [formField]="mqttConnectionForm.password">
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <mat-label>Client ID</mat-label>
-      <input matInput placeholder="Optional client ID" [formField]="mqttConnectionForm.clientId">
-    </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Client ID</mat-label>
+        <input matInput placeholder="Optional client ID" [formField]="mqttConnectionForm.clientId">
+      </mat-form-field>
 
-    <div class="slider-row">
-      <mat-slide-toggle [formField]="mqttConnectionForm.useTls">Use TLS/SSL</mat-slide-toggle>
-      <mat-slide-toggle [formField]="mqttConnectionForm.isActive">Active</mat-slide-toggle>
-    </div>
+      <div class="slider-row">
+        <mat-slide-toggle [formField]="mqttConnectionForm.useTls">Use TLS/SSL</mat-slide-toggle>
+        <mat-slide-toggle [formField]="mqttConnectionForm.isActive">Active</mat-slide-toggle>
+      </div>
 
-    <div class="form-actions">
-      <button mat-raised-button color="primary" [disabled]="mqttConnectionForm().invalid()">{{ isEditMode() ? 'Edit' : 'Create' }}</button>
-      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
-    </div>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" [disabled]="mqttConnectionForm().invalid()">{{ isEditMode() ? 'Edit' : 'Create' }}</button>
+        <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      </div>
 
-  </form>
+    </form>
+  }
 </mat-card>

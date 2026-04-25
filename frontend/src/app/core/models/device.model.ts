@@ -10,7 +10,7 @@ export interface Device {
 export interface CreateDevice {
   name: string;
   description: string;
-  mqttConnectionId: number;
+  mqttConnectionId: number | null;
 }
 
 export interface UpdateDevice {

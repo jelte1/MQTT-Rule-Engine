@@ -30,7 +30,10 @@ public class RuleEngineService : IRuleEngineService
 
                 if (EvaluateCondition(rule, parsedPayload))
                 {
-                    await ExecuteAction(rule);
+                    await ExecuteAction(rule.ActionTopic, rule.ActionField, rule.ActionValue);
+                } else if (HasElseAction(rule))
+                {
+                    await ExecuteAction(rule.ElseActionTopic, rule.ElseActionField, rule.ElseActionValue);
                 }
             }
             catch (Exception ex)
@@ -86,25 +89,33 @@ public class RuleEngineService : IRuleEngineService
         
         return false;
     }
-
-    private async Task ExecuteAction(Rule rule)
+    private async Task ExecuteAction(Topic topic, string? field, string value)
     {
         using var scope = _scopeFactory.CreateScope();
         var mqttClientManager = scope.ServiceProvider.GetRequiredService<IMqttClientManager>();
         var payloadParserService = scope.ServiceProvider.GetRequiredService<IPayloadParserService>();
 
-        if (rule.ActionField != null && !string.IsNullOrEmpty(rule.ActionValue))
+        if (field != null && !string.IsNullOrEmpty(value))
         {
             try
             {
-                var actionPayload = payloadParserService.Format(rule);
+                var actionPayload = payloadParserService.Format(topic, field, value);
                 
-                await mqttClientManager.Publish(rule.ActionTopic, actionPayload);
+                await mqttClientManager.Publish(topic, actionPayload);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to execute action for rule {rule.Id}: {ex.Message}");
+                Console.WriteLine($"Failed to execute action for rule: {ex.Message}");
             }
         }
+    }
+    
+    private bool HasElseAction(Rule rule)
+    {
+        if (rule.ElseActionTopic != null && !string.IsNullOrEmpty(rule.ElseActionValue))
+        {
+            return true;
+        }
+        return false;
     }
 }

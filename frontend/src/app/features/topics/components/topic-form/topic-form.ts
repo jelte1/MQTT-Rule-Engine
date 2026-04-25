@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, HostListener, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {TopicService} from '../../../../core/services/topic.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -12,6 +12,9 @@ import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {Device} from '../../../../core/models/device.model';
 import {DeviceService} from '../../../../core/services/device.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {forkJoin, of} from 'rxjs';
+import {TOPIC_DATA_FORMAT_OPTIONS, TOPIC_DIRECTION_OPTIONS} from '../../../../core/constants/constants';
 
 @Component({
   selector: 'app-topic-form',
@@ -24,7 +27,8 @@ import {DeviceService} from '../../../../core/services/device.service';
     MatLabel,
     MatOption,
     MatSelect,
-    FormField
+    FormField,
+    MatProgressSpinner
   ],
   templateUrl: './topic-form.html',
   styleUrl: './topic-form.css',
@@ -42,43 +46,61 @@ export class TopicForm implements OnInit {
     description: '',
     direction: TopicDirection.Incoming,
     dataFormat: DataFormat.Json,
-    deviceId: 0,
+    deviceId: null,
   });
+  protected readonly TOPIC_DIRECTION_OPTIONS = TOPIC_DIRECTION_OPTIONS;
+  protected readonly TOPIC_DATA_FORMAT_OPTIONS = TOPIC_DATA_FORMAT_OPTIONS;
+
   isEditMode = signal(false);
   id = signal<number | null>(null);
+  loading = signal(false);
+
   devices: Device[] = [];
-  selectedDirection = null;
-  selectedFormat = null;
-  selectedDevice = null;
+
+  // quick save the current object when Ctrl+S or Cmd+S is pressed
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's' && this.isEditMode()) {
+      event.preventDefault();
+      this.submit();
+    }
+  }
 
   ngOnInit(): void {
-
-    this.deviceService.getDevices().subscribe(d =>
-      this.devices = d
-    );
+    this.loading.set(true);
 
     const paramId = this.route.snapshot.paramMap.get('id');
 
     if (paramId) {
       this.id.set(+paramId);
       this.isEditMode.set(true);
-
-      this.topicService.getTopic(+paramId).subscribe({
-        next: data => {
-          this.topicModel.set({
-            name: data.name,
-            topicPath: data.topicPath,
-            description: data.description ?? '',
-            direction: data.direction,
-            dataFormat: data.dataFormat,
-            deviceId: data.deviceId,
-          });
-        },
-        error: () => {
-          this.router.navigate(['/topics']);
-        }
-      });
     }
+
+    forkJoin({
+      devices: this.deviceService.getDevices(),
+      topic: paramId ? this.topicService.getTopic(+paramId) : of(null)
+    }).subscribe({
+      next: ({ devices, topic }) => {
+        this.devices = devices;
+
+        if (topic) {
+          this.topicModel.set({
+            name: topic.name,
+            topicPath: topic.topicPath,
+            description: topic.description ?? '',
+            direction: topic.direction,
+            dataFormat: topic.dataFormat,
+            deviceId: topic.deviceId,
+          });
+        }
+
+        this.loading.set(false);
+      },
+      error: () => {
+        if (paramId) this.router.navigate(['/topics']);
+        this.loading.set(false);
+      }
+    });
   }
 
   topicForm = form(this.topicModel, (schemaPath) => {
@@ -95,7 +117,7 @@ export class TopicForm implements OnInit {
 
   submit() {
     if (this.topicForm().invalid()) {
-      alert("Make sure to fill in all the fields correctly.");
+      this.snack.open("Make sure to fill in all the fields correctly.", "Dismiss", { duration: 3000 });
       return;
     }
 

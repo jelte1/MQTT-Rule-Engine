@@ -10,7 +10,6 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {map} from 'rxjs';
 import {AuthService} from './core/services/auth.service';
-import {Device} from './core/models/device.model';
 
 @Component({
   selector: 'app-root',

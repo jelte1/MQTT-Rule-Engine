@@ -28,5 +28,5 @@ export interface CreateTopic {
   description: string;
   direction: TopicDirection;
   dataFormat: DataFormat;
-  deviceId: number;
+  deviceId: number | null;
 }

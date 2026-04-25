@@ -58,7 +58,7 @@ export class Register {
 
   submit(): void {
     if (this.registerForm().invalid()) {
-      alert('Make sure to fill in all the fields correctly.');
+      this.snack.open("Make sure to fill in all the fields correctly.", "Dismiss", { duration: 3000 });
       return;
     }
 

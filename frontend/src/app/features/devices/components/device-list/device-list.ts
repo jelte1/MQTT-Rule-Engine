@@ -10,6 +10,8 @@ import { CdkTableModule } from '@angular/cdk/table';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
+import {ConfirmDialog, ConfirmDialogData} from '../../../../core/shared/components/confirm-dialog/confirm-dialog';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-device-list',
@@ -39,6 +41,7 @@ import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
 export class DeviceList {
   private deviceService = inject(DeviceService);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   devices = signal<Device[]>([]);
   loading = signal(false);
@@ -67,9 +70,23 @@ export class DeviceList {
   }
 
   delete(id: number): void {
-    this.deviceService.deleteDevice(id).subscribe({
-      next: devices => {
-        this.load();
+    const dialog = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'Delete Device',
+        message: 'Are you sure you want to delete this device? <br><br>' +
+          'This also deletes every topic and rule associated with this device. <br><br>' +
+          'This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel'
+      } satisfies ConfirmDialogData
+    });
+
+    dialog.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.deviceService.deleteDevice(id).subscribe({
+          next: () => this.load()
+        });
       }
     });
   }

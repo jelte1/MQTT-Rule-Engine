@@ -1,4 +1,4 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, HostListener, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RuleService} from '../../../../core/services/rule.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -13,6 +13,9 @@ import {MatSelect} from '@angular/material/select';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {Topic} from '../../../../core/models/topic.model';
 import {TopicService} from '../../../../core/services/topic.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
+import {forkJoin, of} from 'rxjs';
+import {RULE_OPERATORS} from '../../../../core/constants/constants';
 
 @Component({
   selector: 'app-rule-form',
@@ -27,6 +30,7 @@ import {TopicService} from '../../../../core/services/topic.service';
     MatSelect,
     MatSlideToggle,
     FormField,
+    MatProgressSpinner,
   ],
   templateUrl: './rule-form.html',
   styleUrl: './rule-form.css',
@@ -38,6 +42,7 @@ export class RuleForm implements OnInit {
   private topicService = inject(TopicService);
   private snack = inject(MatSnackBar);
 
+  protected readonly RULE_OPERATORS = RULE_OPERATORS;
   protected ruleModel = signal<CreateRule>({
     name: '',
     description: '',
@@ -45,50 +50,72 @@ export class RuleForm implements OnInit {
     conditionField: '',
     operator: ConditionOperator.Equal,
     conditionValue: '',
-    conditionTopicId: 0,
+    conditionTopicId: null,
     actionValue: '',
     actionField: '',
-    actionTopicId: 0
+    actionTopicId: null,
+    elseActionTopicId: null,
+    elseActionField: '',
+    elseActionValue: '',
   });
+
   isEditMode = signal(false);
   id = signal<number | null>(null);
+  loading = signal(false);
+
   topics: Topic[] = [];
-  selectedDirection = null;
-  selectedFormat = null;
-  selectedDevice = null;
+
+  // quick save the current object when Ctrl+S or Cmd+S is pressed
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's' && this.isEditMode()) {
+      event.preventDefault();
+      this.submit();
+    }
+  }
 
   ngOnInit(): void {
-
-    this.topicService.getTopics().subscribe(d =>
-      this.topics = d
-    );
+    this.loading.set(true);
 
     const paramId = this.route.snapshot.paramMap.get('id');
 
     if (paramId) {
       this.id.set(+paramId);
       this.isEditMode.set(true);
-
-      this.ruleService.getRule(+paramId).subscribe({
-        next: data => {
-          this.ruleModel.set({
-            name: data.name,
-            description: data.description,
-            isActive: data.isActive,
-            conditionField: data.conditionField ?? '',
-            operator: data.operator,
-            conditionValue: data.conditionValue,
-            conditionTopicId: data.conditionTopicId,
-            actionValue: data.actionValue,
-            actionField: data.actionField,
-            actionTopicId: data.actionTopicId,
-          });
-        },
-        error: () => {
-          this.router.navigate(['/rules']);
-        }
-      });
     }
+
+    forkJoin({
+      topics: this.topicService.getTopics(),
+      rule: paramId ? this.ruleService.getRule(+paramId) : of(null)
+    }).subscribe({
+      next: ({ topics, rule }) => {
+        this.topics = topics;
+
+        if (rule) {
+          this.ruleModel.set({
+            name: rule.name,
+            description: rule.description,
+            isActive: rule.isActive,
+            conditionField: rule.conditionField ?? '',
+            operator: rule.operator,
+            conditionValue: rule.conditionValue,
+            conditionTopicId: rule.conditionTopicId,
+            actionValue: rule.actionValue,
+            actionField: rule.actionField,
+            actionTopicId: rule.actionTopicId,
+            elseActionTopicId: rule.elseActionTopicId ?? 0,
+            elseActionField: rule.elseActionField ?? '',
+            elseActionValue: rule.elseActionValue ?? '',
+          });
+        }
+
+        this.loading.set(false);
+      },
+      error: () => {
+        if (paramId) this.router.navigate(['/rules']);
+        this.loading.set(false);
+      }
+    });
   }
 
   ruleForm = form(this.ruleModel, (schemaPath) => {
@@ -107,7 +134,7 @@ export class RuleForm implements OnInit {
 
   submit() {
     if (this.ruleForm().invalid()) {
-      alert("Make sure to fill in all the fields correctly.");
+      this.snack.open("Make sure to fill in all the fields correctly.", "Dismiss", { duration: 3000 });
       return;
     }
 

@@ -66,17 +66,17 @@ public class PayloadParserService : IPayloadParserService
         }
     }
     
-    public string Format(Rule rule)
+    public string Format(Topic topic, string? field, string value)
     {
-        var payload = rule.ActionTopic.DataFormat switch
+        var payload = topic.DataFormat switch
         {
             DataFormat.Json => JsonSerializer.Serialize(
-                new Dictionary<string, object> { { rule.ActionField!, rule.ActionValue } }),
-            DataFormat.Numeric => double.TryParse(rule.ActionValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var num)
+                new Dictionary<string, object> { { field!, value } }),
+            DataFormat.Numeric => double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var num)
                 ? num.ToString(CultureInfo.InvariantCulture)
-                : rule.ActionValue,
-            DataFormat.PlainText => rule.ActionValue,
-            _ => rule.ActionValue
+                : value,
+            DataFormat.PlainText => value,
+            _ => value
         };
         return payload;
     }

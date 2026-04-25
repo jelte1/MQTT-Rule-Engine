@@ -1,32 +1,40 @@
 <div class="page-header">
-  <h1>{{ isEditMode() ? 'Edit Device' : 'Create new Device' }}</h1>
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else {
+    <h1>{{ isEditMode() ? 'Edit Device' : 'Create new Device' }}</h1>
+  }
 </div>
 
 <mat-card>
-  <form (ngSubmit)="submit()">
-    <mat-form-field class="full-width">
-      <mat-label>Name</mat-label>
-      <input matInput placeholder="cool name" [formField]="deviceForm.name">
-    </mat-form-field>
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else {
+    <form (ngSubmit)="submit()">
+      <mat-form-field class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="cool name" [formField]="deviceForm.name">
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <mat-label>Description</mat-label>
-      <input matInput placeholder="cool description" [formField]="deviceForm.description">
-    </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Description</mat-label>
+        <input matInput placeholder="cool description" [formField]="deviceForm.description">
+      </mat-form-field>
 
-    <mat-form-field class="full-width">
-      <mat-label>MQTT Connection</mat-label>
-      <mat-select [formField]="deviceForm.mqttConnectionId" [(value)]="selected">
-        @for (mc of mqttConnections; track mc.id) {
-          <mat-option [value]="mc.id">{{ mc.name }} ({{ mc.host }}:{{ mc.port }})</mat-option>
-        }
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>MQTT Connection</mat-label>
+        <mat-select [formField]="deviceForm.mqttConnectionId">
+          @for (mc of mqttConnections; track mc.id) {
+            <mat-option [value]="mc.id">{{ mc.name }} ({{ mc.host }}:{{ mc.port }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
-    <div class="form-actions">
-      <button mat-raised-button color="primary" [disabled]="deviceForm().invalid()">{{ isEditMode() ? 'Edit' : 'Create' }}</button>
-      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
-    </div>
+      <div class="form-actions">
+        <button mat-raised-button color="primary" [disabled]="deviceForm().invalid()">{{ isEditMode() ? 'Edit' : 'Create' }}</button>
+        <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      </div>
 
-  </form>
+    </form>
+  }
 </mat-card>

@@ -58,6 +58,7 @@ export class AuthService extends BaseApiService {
       if (payload.exp * 1000 > Date.now()) {
         return true;
       } else {
+        this.logout();
         return false;
       }
     } catch {

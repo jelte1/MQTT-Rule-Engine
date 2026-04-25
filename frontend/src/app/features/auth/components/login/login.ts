@@ -58,7 +58,7 @@ export class Login {
 
   submit(): void {
     if (this.loginForm().invalid()) {
-      alert("Make sure to fill in all the fields correctly.");
+      this.snack.open("Make sure to fill in all the fields correctly.", "Dismiss", { duration: 3000 });
       return;
     }
     this.login();
