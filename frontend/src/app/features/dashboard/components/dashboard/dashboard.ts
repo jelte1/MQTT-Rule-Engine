@@ -1,6 +1,6 @@
 import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {MatCard, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle} from '@angular/material/card';
-import {SensorData} from '../../../../core/models/sensor-data.model';
+import {SensorDataModel} from '../../../../core/models/sensor-data.model';
 import {SensorDataService} from '../../../../core/services/sensor-data.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {
@@ -49,7 +49,7 @@ export class Dashboard implements OnInit, OnDestroy {
   private snack = inject(MatSnackBar);
   private readonly signalrService = inject(SignalrService);
 
-  sensorData = signal<SensorData[]>([]);
+  sensorData = signal<SensorDataModel[]>([]);
   loading = signal(false);
 
   displayedColumns: string[] = ['topicName', 'topicPath', 'rawPayload', 'receivedAt'];

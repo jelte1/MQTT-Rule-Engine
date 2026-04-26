@@ -2,7 +2,7 @@ import {Component, HostListener, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RuleService} from '../../../../core/services/rule.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {ConditionOperator, CreateRule} from '../../../../core/models/rule.model';
+import {ConditionOperator, CreateRuleModel} from '../../../../core/models/rule.model';
 import {form, FormField, required} from '@angular/forms/signals';
 import {FormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
@@ -11,7 +11,7 @@ import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
-import {Topic} from '../../../../core/models/topic.model';
+import {TopicModel} from '../../../../core/models/topic.model';
 import {TopicService} from '../../../../core/services/topic.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {forkJoin, of} from 'rxjs';
@@ -43,7 +43,7 @@ export class RuleForm implements OnInit {
   private snack = inject(MatSnackBar);
 
   protected readonly RULE_OPERATORS = RULE_OPERATORS;
-  protected ruleModel = signal<CreateRule>({
+  protected ruleModel = signal<CreateRuleModel>({
     name: '',
     description: '',
     isActive: true,
@@ -63,7 +63,7 @@ export class RuleForm implements OnInit {
   id = signal<number | null>(null);
   loading = signal(false);
 
-  topics: Topic[] = [];
+  topics: TopicModel[] = [];
 
   // quick save the current object when Ctrl+S or Cmd+S is pressed
   @HostListener('document:keydown', ['$event'])

@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import {Subject} from 'rxjs';
 import {BaseApiService} from './base-api.service';
-import {SensorData} from '../models/sensor-data.model';
+import {SensorDataModel} from '../models/sensor-data.model';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Injectable({
@@ -10,7 +10,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 })
 export class SignalrService extends BaseApiService{
   private hubConnection!: signalR.HubConnection;
-  private sensorDataSubject = new Subject<SensorData>();
+  private sensorDataSubject = new Subject<SensorDataModel>();
   private snack = inject(MatSnackBar);
   sensorData$ = this.sensorDataSubject.asObservable();
 
@@ -26,7 +26,7 @@ export class SignalrService extends BaseApiService{
       .then()
       .catch(err => this.snack.open('SignalR Connection Error:', err));
 
-    this.hubConnection.on('SensorDataUpdate', (data: SensorData) => {
+    this.hubConnection.on('SensorDataUpdate', (data: SensorDataModel) => {
       this.sensorDataSubject.next(data);
     });
   }

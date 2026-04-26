@@ -2,14 +2,14 @@ import {Component, HostListener, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {DeviceService} from '../../../../core/services/device.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
-import {CreateDevice} from '../../../../core/models/device.model';
+import {CreateDeviceModel} from '../../../../core/models/device.model';
 import {form, FormField, required} from '@angular/forms/signals';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButton} from '@angular/material/button';
 import {MatCard} from '@angular/material/card';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {MqttConnection} from '../../../../core/models/mqtt-connection.model';
+import {MqttConnectionModel} from '../../../../core/models/mqtt-connection.model';
 import {MqttConnectionService} from '../../../../core/services/mqtt-connection.service';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {forkJoin, of} from 'rxjs';
@@ -40,7 +40,7 @@ export class DeviceForm implements OnInit {
   private mqttConnectionService = inject(MqttConnectionService);
   private snack = inject(MatSnackBar);
 
-  protected deviceModel = signal<CreateDevice>({
+  protected deviceModel = signal<CreateDeviceModel>({
     name: '',
     description: '',
     mqttConnectionId: null,
@@ -48,7 +48,7 @@ export class DeviceForm implements OnInit {
   isEditMode = signal(false);
   id = signal<number | null>(null);
   loading = signal(false);
-  mqttConnections: MqttConnection[] = [];
+  mqttConnections: MqttConnectionModel[] = [];
 
   // quick save the current object when Ctrl+S or Cmd+S is pressed
   @HostListener('document:keydown', ['$event'])

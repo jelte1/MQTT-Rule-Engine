@@ -1,6 +1,6 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
 import {MqttConnectionService} from '../../../../core/services/mqtt-connection.service';
-import {MqttConnection} from '../../../../core/models/mqtt-connection.model';
+import {MqttConnectionModel} from '../../../../core/models/mqtt-connection.model';
 import {Router, RouterLink} from "@angular/router";
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
@@ -43,7 +43,7 @@ export class MqttConnectionList implements OnInit {
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
-  mqttConnections = signal<MqttConnection[]>([]);
+  mqttConnections = signal<MqttConnectionModel[]>([]);
   loading = signal(false);
   displayedColumns: string[] = ['name', 'host', 'port', 'status', 'actions'];
 
@@ -98,7 +98,8 @@ export class MqttConnectionList implements OnInit {
         this.load();
       },
       error: (err: any) => {
-        this.snack.open('Reconnection failed: ' + err.error.message, 'Dismiss', { duration: 3000 });
+        console.log(err)
+        this.snack.open('Reconnection failed: ' + err.error, 'Dismiss', { duration: 3000 });
         this.load();
       }
     });

@@ -1,3 +1,4 @@
+
 export enum TopicDirection {
   Incoming = 0,
   Outgoing = 1,
@@ -10,7 +11,7 @@ export enum DataFormat {
   Numeric = 2
 }
 
-export interface Topic {
+export interface TopicModel {
   id: number;
   name: string;
   topicPath: string;
@@ -22,7 +23,7 @@ export interface Topic {
   deviceName: string;
 }
 
-export interface CreateTopic {
+export interface CreateTopicModel {
   name: string;
   topicPath: string;
   description: string;

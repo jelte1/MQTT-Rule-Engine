@@ -1,4 +1,4 @@
-export interface MqttConnection {
+export interface MqttConnectionModel {
   id: number;
   name: string;
   host: string;
@@ -11,7 +11,7 @@ export interface MqttConnection {
   isConnected: boolean;
 }
 
-export interface CreateMqttConnection {
+export interface CreateMqttConnectionModel {
   name: string;
   host: string;
   port: number;
@@ -22,7 +22,7 @@ export interface CreateMqttConnection {
   isActive: boolean;
 }
 
-export interface UpdateMqttConnection {
+export interface UpdateMqttConnectionModel {
   name: string;
   host: string;
   port: number;

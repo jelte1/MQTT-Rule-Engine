@@ -6,7 +6,7 @@ import {MatCard} from '@angular/material/card';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormField, required} from '@angular/forms/signals';
 import {MqttConnectionService} from '../../../../core/services/mqtt-connection.service';
-import {CreateMqttConnection} from '../../../../core/models/mqtt-connection.model';
+import {CreateMqttConnectionModel} from '../../../../core/models/mqtt-connection.model';
 import {form} from '@angular/forms/signals';
 import {FormsModule} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -35,7 +35,7 @@ export class MqttConnectionForm implements OnInit {
   private mqttConnectionService = inject(MqttConnectionService);
   private snack = inject(MatSnackBar);
 
-  protected mqttConnectionModel = signal<CreateMqttConnection>({
+  protected mqttConnectionModel = signal<CreateMqttConnectionModel>({
     name: '',
     host: '',
     port: 1883,

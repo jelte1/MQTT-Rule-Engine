@@ -2,7 +2,7 @@ import { BaseApiService } from './base-api.service';
 import { Injectable } from '@angular/core';
 import {Observable, tap} from 'rxjs';
 import {AuthModel, LoginModel, RegisterModel} from '../models/auth.model';
-import {Device} from '../models/device.model';
+import {DeviceModel} from '../models/device.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseApiService {

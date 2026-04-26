@@ -1,29 +1,29 @@
 import { BaseApiService } from './base-api.service';
 import { Injectable } from '@angular/core';
-import { MqttConnection } from '../models/mqtt-connection.model';
+import { MqttConnectionModel } from '../models/mqtt-connection.model';
 import { Observable } from 'rxjs';
-import {CreateMqttConnection, UpdateMqttConnection} from '../models/mqtt-connection.model';
+import {CreateMqttConnectionModel, UpdateMqttConnectionModel} from '../models/mqtt-connection.model';
 
 @Injectable({ providedIn: 'root' })
 export class MqttConnectionService extends BaseApiService {
-  getMqttConnections() : Observable<MqttConnection[]> {
-    return this.http.get<MqttConnection[]>(`${this.apiUrl}/mqttconnections`);
+  getMqttConnections() : Observable<MqttConnectionModel[]> {
+    return this.http.get<MqttConnectionModel[]>(`${this.apiUrl}/mqttconnections`);
   }
 
-  getMqttConnection(id: number) : Observable<MqttConnection> {
-    return this.http.get<MqttConnection>(`${this.apiUrl}/mqttconnections/${id}`);
+  getMqttConnection(id: number) : Observable<MqttConnectionModel> {
+    return this.http.get<MqttConnectionModel>(`${this.apiUrl}/mqttconnections/${id}`);
   }
 
-  createMqttConnection(dto: CreateMqttConnection): Observable<MqttConnection> {
-    return this.http.post<MqttConnection>(`${this.apiUrl}/mqttconnections`, dto);
+  createMqttConnection(dto: CreateMqttConnectionModel): Observable<MqttConnectionModel> {
+    return this.http.post<MqttConnectionModel>(`${this.apiUrl}/mqttconnections`, dto);
   }
 
-  updateMqttConnection(id: number, dto: UpdateMqttConnection): Observable<MqttConnection> {
-    return this.http.put<MqttConnection>(`${this.apiUrl}/mqttconnections/${id}`, dto);
+  updateMqttConnection(id: number, dto: UpdateMqttConnectionModel): Observable<MqttConnectionModel> {
+    return this.http.put<MqttConnectionModel>(`${this.apiUrl}/mqttconnections/${id}`, dto);
   }
 
-  reconnectMqttConnection(id: number) : Observable<MqttConnection> {
-    return this.http.post<MqttConnection>(`${this.apiUrl}/mqttconnections/${id}/reconnect`, {});
+  reconnectMqttConnection(id: number) : Observable<MqttConnectionModel> {
+    return this.http.post<MqttConnectionModel>(`${this.apiUrl}/mqttconnections/${id}/reconnect`, {});
   }
 
   deleteMqttConnection(id: number): Observable<void> {

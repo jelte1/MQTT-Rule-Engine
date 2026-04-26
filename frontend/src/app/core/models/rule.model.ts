@@ -1,3 +1,5 @@
+import {MqttConnectionModel} from './mqtt-connection.model';
+
 export enum ConditionOperator {
   GreaterThan = 0,
   LessThan = 1,
@@ -8,7 +10,7 @@ export enum ConditionOperator {
   Contains = 6
 }
 
-export interface Rule {
+export interface RuleModel {
   id: number;
   name: string;
   description: string;
@@ -33,7 +35,7 @@ export interface Rule {
   elseActionValue?: string;
 }
 
-export interface CreateRule {
+export interface CreateRuleModel {
   name: string;
   description: string;
   isActive: boolean;

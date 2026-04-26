@@ -3,6 +3,8 @@ using backend.Database;
 using backend.DTOs.SensorData;
 using backend.Interfaces;
 using backend.Entities;
+using System.Linq.Dynamic.Core;
+using backend.Extensions;
 
 namespace backend.Repositories;
 
@@ -29,8 +31,54 @@ public class SensorDataRepository : Repository<SensorData>, ISensorDataRepositor
         var sensorData = await UserQuery(userId)
             .OrderByDescending(sd => sd.ReceivedAt)
             .Take(count)
-            .Include(sd => sd.Topic)
             .ToListAsync();
         return sensorData;
+    }
+    
+    public async Task<IEnumerable<SensorData>> GetPaginated(int size, int offset, string sortingField, string sortingOrder, string filterQuery, string userId)
+    {
+        var validSortOrder = sortingOrder?.ToLower() == "asc" ? "ASC" : "DESC";
+        var validSortField = GetValidSortField(sortingField);
+        var query = UserQuery(userId);
+        
+        if (!string.IsNullOrEmpty(filterQuery))
+        {
+            query = query.Where(sd => sd.Topic.Name.Contains(filterQuery) || 
+                                      sd.Topic.TopicPath.Contains(filterQuery) || 
+                                      sd.RawPayload.Contains(filterQuery));
+        }
+        
+        var sensorData = await query
+            .ApplySort(validSortField, validSortOrder)
+            .Skip(offset)
+            .Take(size)
+            .ToListAsync();
+        return sensorData;
+    }
+
+    private static string GetValidSortField(string? sortField)
+    {
+        return sortField?.ToLower() switch
+        {
+            "topicname" => "Topic.Name",
+            "topicpath" => "Topic.TopicPath",
+            "rawpayload" => "RawPayload",
+            "receivedat" => "ReceivedAt",
+            _ => "ReceivedAt"
+        };
+    }
+
+    public async Task<int> GetTotalCount(string userId, string filterQuery)
+    {
+        var query = UserQuery(userId);
+        
+        if (!string.IsNullOrEmpty(filterQuery))
+        {
+            query = query.Where(sd => sd.Topic.Name.Contains(filterQuery) || 
+                                      sd.Topic.TopicPath.Contains(filterQuery) || 
+                                      sd.RawPayload.Contains(filterQuery));
+        }
+        
+        return await query.CountAsync();
     }
 }

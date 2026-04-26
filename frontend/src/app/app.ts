@@ -30,6 +30,7 @@ export class App implements OnInit {
     { label: 'Devices', icon: 'devices', route: '/devices' },
     { label: 'Topics', icon: 'folder', route: '/topics' },
     { label: 'Rules', icon: 'rule', route: '/rules' },
+    { label: 'Sensor Data', icon: 'data_object', route: '/sensordata' },
   ];
 
   private breakpointObserver = inject(BreakpointObserver);

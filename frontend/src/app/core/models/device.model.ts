@@ -1,4 +1,4 @@
-export interface Device {
+export interface DeviceModel {
   id: number;
   name: string;
   description?: string;
@@ -7,13 +7,13 @@ export interface Device {
   createdAt: string;
 }
 
-export interface CreateDevice {
+export interface CreateDeviceModel {
   name: string;
   description: string;
   mqttConnectionId: number | null;
 }
 
-export interface UpdateDevice {
+export interface UpdateDeviceModel {
   name: string;
   description: string;
   mqttConnectionId: number;

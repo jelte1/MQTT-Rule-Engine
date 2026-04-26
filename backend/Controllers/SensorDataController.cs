@@ -36,4 +36,33 @@ public class SensorDataController : ControllerBase
         
         return Ok(_mapper.Map<IEnumerable<SensorDataDto>>(sensorData));
     }
+    
+    // GET: /api/sensordata?size=10&page=1
+    [HttpGet]
+    public async Task<ActionResult<SensorDataPageDto>> GetSensorDataPage(
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int pageNumber = 0,
+        [FromQuery] string sortingField = "receivedAt",
+        [FromQuery] string sortingOrder = "asc",
+        [FromQuery] string filterQuery = ""
+        )
+    {
+        var userId = User.GetLoggedInUserId();
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var total = await _sensorDataRepository.GetTotalCount(userId, filterQuery);
+        var sensorData = await _sensorDataRepository.GetPaginated(pageSize, (pageNumber * pageSize), sortingField, sortingOrder, filterQuery, userId);
+
+        var dto = new SensorDataPageDto()
+        {
+            Total = total,
+            SensorData = _mapper.Map<IEnumerable<SensorDataDto>>(sensorData)
+        };
+        
+        return Ok(dto);
+    }
 }

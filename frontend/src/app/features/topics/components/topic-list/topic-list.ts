@@ -1,7 +1,7 @@
 import {Component, inject, signal} from '@angular/core';
 import {TopicService} from '../../../../core/services/topic.service';
 import {Router, RouterLink} from '@angular/router';
-import {Topic} from '../../../../core/models/topic.model';
+import {TopicModel} from '../../../../core/models/topic.model';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {
@@ -49,7 +49,7 @@ export class TopicList {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  topics = signal<Topic[]>([]);
+  topics = signal<TopicModel[]>([]);
   loading = signal(false);
   displayedColumns: string[] = ['name', 'topicPath', 'description', 'deviceName', 'actions'];
 

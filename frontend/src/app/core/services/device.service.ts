@@ -1,25 +1,25 @@
 import { BaseApiService } from './base-api.service';
 import { Injectable } from '@angular/core';
-import { Device } from '../models/device.model';
+import { DeviceModel } from '../models/device.model';
 import { Observable } from 'rxjs';
-import {CreateDevice} from '../models/device.model';
+import {CreateDeviceModel} from '../models/device.model';
 
 @Injectable({ providedIn: 'root' })
 export class DeviceService extends BaseApiService {
-  getDevices() : Observable<Device[]> {
-    return this.http.get<Device[]>(`${this.apiUrl}/devices`);
+  getDevices() : Observable<DeviceModel[]> {
+    return this.http.get<DeviceModel[]>(`${this.apiUrl}/devices`);
   }
 
-  getDevice(id: number) : Observable<Device> {
-    return this.http.get<Device>(`${this.apiUrl}/devices/${id}`);
+  getDevice(id: number) : Observable<DeviceModel> {
+    return this.http.get<DeviceModel>(`${this.apiUrl}/devices/${id}`);
   }
 
-  createDevice(dto: CreateDevice): Observable<Device> {
-    return this.http.post<Device>(`${this.apiUrl}/devices`, dto);
+  createDevice(dto: CreateDeviceModel): Observable<DeviceModel> {
+    return this.http.post<DeviceModel>(`${this.apiUrl}/devices`, dto);
   }
 
-  updateDevice(id: number, dto: CreateDevice): Observable<Device> {
-    return this.http.put<Device>(`${this.apiUrl}/devices/${id}`, dto);
+  updateDevice(id: number, dto: CreateDeviceModel): Observable<DeviceModel> {
+    return this.http.put<DeviceModel>(`${this.apiUrl}/devices/${id}`, dto);
   }
 
   deleteDevice(id: number): Observable<void> {

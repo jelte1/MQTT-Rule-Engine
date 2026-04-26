@@ -11,6 +11,7 @@ import {RuleForm} from './features/rules/components/rule-form/rule-form';
 import {Login} from './features/auth/components/login/login';
 import {Register} from './features/auth/components/register/register';
 import {authGuard} from './core/guards/auth.guard';
+import {SensorDataList} from './features/sensorData/components/sensor-data-list/sensor-data-list';
 
 export const routes: Routes = [
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
@@ -26,8 +27,9 @@ export const routes: Routes = [
   { path: 'rules', component: RuleList, canActivate: [authGuard] },
   { path: 'rules/new', component: RuleForm, canActivate: [authGuard] },
   { path: 'rules/edit/:id', component: RuleForm, canActivate: [authGuard] },
+  { path: 'sensordata', component: SensorDataList, canActivate: [authGuard] },
   { path: '', component: Login },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  { path: '**', component: Dashboard, canActivate: [authGuard] }
+  { path: '**', redirectTo: 'dashboard' },
 ];

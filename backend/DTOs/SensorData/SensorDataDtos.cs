@@ -17,3 +17,9 @@ public class CreateSensorDataDto
     public string RawPayload { get; set; } = string.Empty;
     public int TopicId { get; set; }
 }
+
+public class SensorDataPageDto
+{
+    public int Total { get; set; }
+    public IEnumerable<SensorDataDto> SensorData { get; set; } = new List<SensorDataDto>();
+}

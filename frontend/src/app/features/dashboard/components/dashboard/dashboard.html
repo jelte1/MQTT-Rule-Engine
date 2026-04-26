@@ -41,7 +41,7 @@
 
         <ng-container matColumnDef="rawPayload">
           <th mat-header-cell *matHeaderCellDef>Payload</th>
-          <td mat-cell *matCellDef="let sensorData">{{ sensorData.rawPayload }}</td>
+          <td mat-cell *matCellDef="let sensorData"><code>{{ sensorData.rawPayload }}</code></td>
         </ng-container>
 
         <ng-container matColumnDef="receivedAt">

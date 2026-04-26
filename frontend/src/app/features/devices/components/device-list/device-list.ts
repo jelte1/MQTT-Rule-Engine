@@ -1,6 +1,6 @@
 import {Component, inject, signal} from '@angular/core';
 import {DeviceService} from '../../../../core/services/device.service';
-import {Device} from '../../../../core/models/device.model';
+import {DeviceModel} from '../../../../core/models/device.model';
 import {Router, RouterLink} from "@angular/router";
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
@@ -43,7 +43,7 @@ export class DeviceList {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  devices = signal<Device[]>([]);
+  devices = signal<DeviceModel[]>([]);
   loading = signal(false);
   displayedColumns: string[] = ['name', 'description', 'connectionName', 'createdAt', 'actions'];
 
