@@ -1,8 +1,12 @@
-import { BaseApiService } from './base-api.service';
-import { Injectable } from '@angular/core';
-import { MqttConnectionModel } from '../models/mqtt-connection.model';
-import { Observable } from 'rxjs';
-import {CreateMqttConnectionModel, UpdateMqttConnectionModel} from '../models/mqtt-connection.model';
+import {BaseApiService} from './base-api.service';
+import {Injectable} from '@angular/core';
+import {
+  CreateMqttConnectionModel,
+  MqttConnectionModel,
+  UpdateMqttConnectionModel
+} from '../models/mqtt-connection.model';
+import {Observable} from 'rxjs';
+import {PageModel, TablePageModel} from '../models/table-page.model';
 
 @Injectable({ providedIn: 'root' })
 export class MqttConnectionService extends BaseApiService {
@@ -28,5 +32,9 @@ export class MqttConnectionService extends BaseApiService {
 
   deleteMqttConnection(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/mqttconnections/${id}`);
+  }
+
+  getMqttConnectionPage(tablePage: TablePageModel): Observable<PageModel<MqttConnectionModel>> {
+    return this.getPage<PageModel<MqttConnectionModel>>('mqttconnections', tablePage);
   }
 }

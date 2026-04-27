@@ -103,7 +103,7 @@ export class RuleForm implements OnInit {
             actionValue: rule.actionValue,
             actionField: rule.actionField,
             actionTopicId: rule.actionTopicId,
-            elseActionTopicId: rule.elseActionTopicId ?? 0,
+            elseActionTopicId: rule.elseActionTopicId ?? null,
             elseActionField: rule.elseActionField ?? '',
             elseActionValue: rule.elseActionValue ?? '',
           });
@@ -125,7 +125,6 @@ export class RuleForm implements OnInit {
     required(schemaPath.conditionValue, {message: 'Condition value to check is required'});
     required(schemaPath.actionTopicId, {message: 'Action topic is required'});
     required(schemaPath.actionValue, {message: 'Value to publish is required'});
-    required(schemaPath.isActive, {message: 'Active is required'});
   });
 
   cancel() : void {

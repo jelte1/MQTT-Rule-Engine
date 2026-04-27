@@ -1,4 +1,5 @@
 using AutoMapper;
+using backend.DTOs.Page;
 using backend.DTOs.Rule;
 using backend.Entities;
 using backend.Extensions;
@@ -141,5 +142,38 @@ public class RulesController : ControllerBase
         await _ruleRepository.SaveChangesAsync();
         
         return NoContent();
+    }
+    
+    // GET: /api/rules/page?pageSize=10&pageNumber=1&sortingField=receivedAt&sortingOrder=asc&filterQuery=test
+    [HttpGet("page")]
+    public async Task<ActionResult<RuleDto>> GetRulePage(
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int pageNumber = 0,
+        [FromQuery] string sortingField = "id",
+        [FromQuery] string sortingOrder = "asc",
+        [FromQuery] string filterQuery = ""
+    )
+    {
+        var userId = User.GetLoggedInUserId();
+        // max 100
+        pageSize = Math.Clamp(pageSize, 1, 100);
+        // minimal 0
+        pageNumber = Math.Max(0, pageNumber);
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var total = await _ruleRepository.GetTotalCount(userId, filterQuery);
+        var rules = await _ruleRepository.GetPaginated(pageSize, (pageNumber * pageSize), sortingField, sortingOrder, filterQuery, userId);
+
+        var dto = new PageDto<RuleDto>()
+        {
+            Total = total,
+            Data = _mapper.Map<IEnumerable<RuleDto>>(rules)
+        };
+        
+        return Ok(dto);
     }
 }

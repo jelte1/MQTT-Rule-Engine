@@ -1,4 +1,5 @@
 using AutoMapper;
+using backend.DTOs.Page;
 using backend.DTOs.SensorData;
 using backend.Extensions;
 using backend.Interfaces;
@@ -37,17 +38,21 @@ public class SensorDataController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<SensorDataDto>>(sensorData));
     }
     
-    // GET: /api/sensordata?size=10&page=1
-    [HttpGet]
-    public async Task<ActionResult<SensorDataPageDto>> GetSensorDataPage(
+    // GET: /api/sensordata/page?pageSize=10&pageNumber=1&sortingField=receivedAt&sortingOrder=asc&filterQuery=test
+    [HttpGet("page")]
+    public async Task<ActionResult<SensorDataDto>> GetSensorDataPage(
         [FromQuery] int pageSize = 10,
         [FromQuery] int pageNumber = 0,
-        [FromQuery] string sortingField = "receivedAt",
+        [FromQuery] string sortingField = "id",
         [FromQuery] string sortingOrder = "asc",
         [FromQuery] string filterQuery = ""
         )
     {
         var userId = User.GetLoggedInUserId();
+        // max 100
+        pageSize = Math.Clamp(pageSize, 1, 100);
+        // minimal 0
+        pageNumber = Math.Max(0, pageNumber);
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -57,10 +62,10 @@ public class SensorDataController : ControllerBase
         var total = await _sensorDataRepository.GetTotalCount(userId, filterQuery);
         var sensorData = await _sensorDataRepository.GetPaginated(pageSize, (pageNumber * pageSize), sortingField, sortingOrder, filterQuery, userId);
 
-        var dto = new SensorDataPageDto()
+        var dto = new PageDto<SensorDataDto>()
         {
             Total = total,
-            SensorData = _mapper.Map<IEnumerable<SensorDataDto>>(sensorData)
+            Data = _mapper.Map<IEnumerable<SensorDataDto>>(sensorData)
         };
         
         return Ok(dto);

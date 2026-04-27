@@ -1,8 +1,8 @@
-import { BaseApiService } from './base-api.service';
-import { Injectable } from '@angular/core';
-import { RuleModel } from '../models/rule.model';
-import { Observable } from 'rxjs';
-import { CreateRuleModel } from '../models/rule.model';
+import {BaseApiService} from './base-api.service';
+import {Injectable} from '@angular/core';
+import {CreateRuleModel, RuleModel} from '../models/rule.model';
+import {Observable} from 'rxjs';
+import {PageModel, TablePageModel} from '../models/table-page.model';
 
 @Injectable({ providedIn: 'root' })
 export class RuleService extends BaseApiService {
@@ -24,5 +24,9 @@ export class RuleService extends BaseApiService {
 
   deleteRule(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/rules/${id}`);
+  }
+
+  getRulesPage(tablePage: TablePageModel): Observable<PageModel<RuleModel>> {
+    return this.getPage<PageModel<RuleModel>>('rules', tablePage);
   }
 }

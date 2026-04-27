@@ -29,12 +29,3 @@ export const TOPIC_DATA_FORMAT_OPTIONS = [
   { value: DataFormat.Numeric, label: 'Numeric' },
 ];
 
-export const PAGE_SIZE_OPTIONS = {
-  SMALL: 5,
-  MEDIUM: 10,
-  LARGE: 20,
-  EXTRA_LARGE: 50,
-  HUGE: 100,
-  ALL: [5, 10, 20, 50, 100],
-};
-

@@ -1,5 +1,3 @@
-import {MqttConnectionModel} from './mqtt-connection.model';
-
 export enum ConditionOperator {
   GreaterThan = 0,
   LessThan = 1,
@@ -52,4 +50,9 @@ export interface CreateRuleModel {
   elseActionTopicId: number | null;
   elseActionField: string;
   elseActionValue: string;
+}
+
+export interface RulePageModel {
+  total: number;
+  sensorData: RuleModel[];
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using backend.Database;
 using backend.Interfaces;
 using backend.Entities;
+using backend.Extensions;
 
 namespace backend.Repositories;
 
@@ -61,5 +62,57 @@ public class TopicRepository : Repository<Topic>, ITopicRepository
                                       &&
                                       (t.Direction == TopicDirection.Incoming || t.Direction == TopicDirection.Both));
         return topic;
+    }
+    
+    public async Task<IEnumerable<Topic>> GetPaginated(int size, int offset, string sortingField, string sortingOrder, string filterQuery, string userId)
+    {
+        var validSortOrder = sortingOrder?.ToLower() == "asc" ? "ASC" : "DESC";
+        var validSortField = GetValidSortField(sortingField);
+        var query = UserQuery(userId);
+        
+        if (!string.IsNullOrEmpty(filterQuery))
+        {
+            query = query.Where(r => r.Name.Contains(filterQuery) || 
+                                           r.Description.Contains(filterQuery) ||
+                                           r.TopicPath.Contains(filterQuery) ||
+                                           r.Device.Name.Contains(filterQuery)
+            );
+        }
+        
+        var topics = await query
+            .ApplySort(validSortField, validSortOrder)
+            .Skip(offset)
+            .Take(size)
+            .ToListAsync();
+        return topics;
+    }
+
+    private static string GetValidSortField(string? sortField)
+    {
+        return sortField?.ToLower() switch
+        {
+            "name" => "Name",
+            "description" => "Description",
+            "topicpath" => "TopicPath",
+            "devicename" => "Device.Name",
+            "createdat" => "CreatedAt",
+            _ => "CreatedAt"
+        };
+    }
+
+    public async Task<int> GetTotalCount(string userId, string filterQuery)
+    {
+        var query = UserQuery(userId);
+        
+        if (!string.IsNullOrEmpty(filterQuery))
+        {
+            query = query.Where(r => r.Name.Contains(filterQuery) || 
+                                     r.Description.Contains(filterQuery) ||
+                                     r.TopicPath.Contains(filterQuery) ||
+                                     r.Device.Name.Contains(filterQuery)
+            );
+        }
+        
+        return await query.CountAsync();
     }
 }

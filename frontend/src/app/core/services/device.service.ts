@@ -1,8 +1,8 @@
-import { BaseApiService } from './base-api.service';
-import { Injectable } from '@angular/core';
-import { DeviceModel } from '../models/device.model';
-import { Observable } from 'rxjs';
-import {CreateDeviceModel} from '../models/device.model';
+import {BaseApiService} from './base-api.service';
+import {Injectable} from '@angular/core';
+import {CreateDeviceModel, DeviceModel} from '../models/device.model';
+import {Observable} from 'rxjs';
+import {PageModel, TablePageModel} from '../models/table-page.model';
 
 @Injectable({ providedIn: 'root' })
 export class DeviceService extends BaseApiService {
@@ -24,5 +24,9 @@ export class DeviceService extends BaseApiService {
 
   deleteDevice(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/devices/${id}`);
+  }
+
+  getDevicesPage(tablePage: TablePageModel): Observable<PageModel<DeviceModel>> {
+    return this.getPage<PageModel<DeviceModel>>('devices', tablePage);
   }
 }

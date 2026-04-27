@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using backend.Database;
 using backend.Interfaces;
 using backend.Entities;
+using backend.Extensions;
 
 namespace backend.Repositories;
 
@@ -48,5 +49,52 @@ public class RuleRepository : Repository<Rule>, IRuleRepository
             .ThenInclude(t => t.Device)
             .Where(r => r.ConditionTopicId == topicId && r.IsActive)
             .ToListAsync();
+    }
+    
+    public async Task<IEnumerable<Rule>> GetPaginated(int size, int offset, string sortingField, string sortingOrder, string filterQuery, string userId)
+    {
+        var validSortOrder = sortingOrder?.ToLower() == "asc" ? "ASC" : "DESC";
+        var validSortField = GetValidSortField(sortingField);
+        var query = UserQuery(userId);
+        
+        if (!string.IsNullOrEmpty(filterQuery))
+        {
+            query = query.Where(r => r.Name.Contains(filterQuery) || 
+                                          r.Description.Contains(filterQuery)
+            );
+        }
+        
+        var rules = await query
+            .ApplySort(validSortField, validSortOrder)
+            .Skip(offset)
+            .Take(size)
+            .ToListAsync();
+        return rules;
+    }
+
+    private static string GetValidSortField(string? sortField)
+    {
+        return sortField?.ToLower() switch
+        {
+            "name" => "Name",
+            "description" => "Description",
+            "isActive" => "IsActive",
+            "createdat" => "CreatedAt",
+            _ => "CreatedAt"
+        };
+    }
+
+    public async Task<int> GetTotalCount(string userId, string filterQuery)
+    {
+        var query = UserQuery(userId);
+        
+        if (!string.IsNullOrEmpty(filterQuery))
+        {
+            query = query.Where(r => r.Name.Contains(filterQuery) || 
+                                     r.Description.Contains(filterQuery)
+            );
+        }
+        
+        return await query.CountAsync();
     }
 }

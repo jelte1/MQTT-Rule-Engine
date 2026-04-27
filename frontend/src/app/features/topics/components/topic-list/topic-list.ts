@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {TopicService} from '../../../../core/services/topic.service';
 import {Router, RouterLink} from '@angular/router';
 import {TopicModel} from '../../../../core/models/topic.model';
@@ -8,16 +8,25 @@ import {
   MatCell,
   MatCellDef,
   MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
-  MatRow, MatRowDef, MatTable
+  MatRow,
+  MatRowDef,
+  MatTable
 } from '@angular/material/table';
 import {MatIcon} from '@angular/material/icon';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialog, ConfirmDialogData} from '../../../../core/shared/components/confirm-dialog/confirm-dialog';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {BaseTable} from '../../../../core/shared/components/base-table/base-table';
+import {map, Observable} from 'rxjs';
+import {PageModel, TablePageModel} from '../../../../core/models/table-page.model';
 
 @Component({
   selector: 'app-topic-list',
@@ -39,36 +48,32 @@ import {ConfirmDialog, ConfirmDialogData} from '../../../../core/shared/componen
     MatTooltip,
     RouterLink,
     MatHeaderCellDef,
-    MatCardContent
+    MatCardContent,
+    MatPaginator,
+    MatSort,
+    MatSortHeader,
+    MatFormField,
+    MatLabel,
+    MatInput
   ],
   templateUrl: './topic-list.html',
   styleUrl: './topic-list.css',
 })
-export class TopicList {
+export class TopicList extends BaseTable<TopicModel> implements OnInit {
   private topicService = inject(TopicService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  topics = signal<TopicModel[]>([]);
-  loading = signal(false);
   displayedColumns: string[] = ['name', 'topicPath', 'description', 'deviceName', 'actions'];
 
-  ngOnInit(): void {
-    this.load();
+  protected override defaultSortField(): string {
+    return 'createdAt';
   }
 
-  load(): void {
-    this.loading.set(true);
-
-    this.topicService.getTopics().subscribe({
-      next: topics => {
-        this.topics.set(topics);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
+  protected override fetchPage(page: TablePageModel): Observable<PageModel<TopicModel>> {
+    return this.topicService.getTopicsPage(page).pipe(
+      map(response => ({data: response.data, total: response.total}))
+    );
   }
 
   edit(id: number): void {

@@ -1,17 +1,23 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {MqttConnectionService} from '../../../../core/services/mqtt-connection.service';
 import {MqttConnectionModel} from '../../../../core/models/mqtt-connection.model';
 import {Router, RouterLink} from "@angular/router";
 import {MatIcon} from '@angular/material/icon';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
-import {MatCell, MatHeaderCell, MatHeaderRow, MatRow, MatTable, MatTableModule } from '@angular/material/table';
-import { CdkTableModule } from '@angular/cdk/table';
+import {MatCell, MatHeaderCell, MatHeaderRow, MatRow, MatTable, MatTableModule} from '@angular/material/table';
+import {CdkTableModule} from '@angular/cdk/table';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatCard, MatCardContent} from '@angular/material/card';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialog, ConfirmDialogData} from '../../../../core/shared/components/confirm-dialog/confirm-dialog';
+import {PageModel, TablePageModel} from '../../../../core/models/table-page.model';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort, MatSortHeader} from '@angular/material/sort';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
+import {map, Observable} from 'rxjs';
+import {BaseTable} from '../../../../core/shared/components/base-table/base-table';
 
 @Component({
   selector: 'app-mqtt-connection-list',
@@ -31,38 +37,34 @@ import {ConfirmDialog, ConfirmDialogData} from '../../../../core/shared/componen
     MatIconButton,
     MatTooltip,
     MatCard,
-    MatCardContent
+    MatCardContent,
+    MatPaginator,
+    MatSort,
+    MatSortHeader,
+    MatFormField,
+    MatLabel,
+    MatInput
   ],
   templateUrl: './mqtt-connection-list.html',
   styleUrl: './mqtt-connection-list.css',
 })
 
-export class MqttConnectionList implements OnInit {
+export class MqttConnectionList extends BaseTable<MqttConnectionModel> implements OnInit {
   private mqttConnectionService = inject(MqttConnectionService);
   private router = inject(Router);
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
-  mqttConnections = signal<MqttConnectionModel[]>([]);
-  loading = signal(false);
-  displayedColumns: string[] = ['name', 'host', 'port', 'status', 'actions'];
+  displayedColumns: string[] = ['name', 'host', 'status', 'actions'];
 
-  ngOnInit(): void {
-    this.load();
+  protected override defaultSortField(): string {
+    return 'isActive';
   }
 
-  load(): void {
-    this.loading.set(true);
-
-    this.mqttConnectionService.getMqttConnections().subscribe({
-      next: mqttConnections => {
-        this.mqttConnections.set(mqttConnections);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.loading.set(false);
-      }
-    });
+  protected override fetchPage(page: TablePageModel): Observable<PageModel<MqttConnectionModel>> {
+    return this.mqttConnectionService.getMqttConnectionPage(page).pipe(
+      map(response => ({data: response.data, total: response.total}))
+    );
   }
 
   edit(id: number): void {

@@ -1,8 +1,8 @@
-import { BaseApiService } from './base-api.service';
-import { Injectable } from '@angular/core';
-import { TopicModel } from '../models/topic.model';
-import { Observable } from 'rxjs';
-import { CreateTopicModel } from '../models/topic.model';
+import {BaseApiService} from './base-api.service';
+import {Injectable} from '@angular/core';
+import {CreateTopicModel, TopicModel} from '../models/topic.model';
+import {Observable} from 'rxjs';
+import {PageModel, TablePageModel} from '../models/table-page.model';
 
 @Injectable({ providedIn: 'root' })
 export class TopicService extends BaseApiService {
@@ -24,5 +24,9 @@ export class TopicService extends BaseApiService {
 
   deleteTopic(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/topics/${id}`);
+  }
+
+  getTopicsPage(tablePage: TablePageModel): Observable<PageModel<TopicModel>> {
+    return this.getPage<PageModel<TopicModel>>('topics', tablePage);
   }
 }
