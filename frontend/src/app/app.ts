@@ -31,6 +31,7 @@ export class App implements OnInit {
     { label: 'Topics', icon: 'folder', route: '/topics' },
     { label: 'Rules', icon: 'rule', route: '/rules' },
     { label: 'Sensor Data', icon: 'data_object', route: '/sensordata' },
+    { label: 'Sent Data', icon: 'send', route: '/sentdata' },
   ];
 
   private breakpointObserver = inject(BreakpointObserver);
@@ -38,13 +39,13 @@ export class App implements OnInit {
   private router = inject(Router);
 
   sidenavOpened = signal(true);
-
   isMobile = toSignal(
     this.breakpointObserver.observe(Breakpoints.Handset).pipe(
       map(result => result.matches)
     ),
     { initialValue: false }
   );
+  isLoggedIn = signal(this.authService.isLoggedInVar);
 
   toggleSidenav() {
     this.sidenavOpened.set(!this.sidenavOpened());
@@ -54,10 +55,6 @@ export class App implements OnInit {
     if (this.isMobile()) {
       this.sidenavOpened.set(false);
     }
-  }
-
-  isLoggedIn() {
-    return this.authService.isLoggedIn();
   }
 
   logout(): void {

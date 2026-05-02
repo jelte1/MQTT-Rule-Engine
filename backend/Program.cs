@@ -44,6 +44,8 @@ builder.Services.AddScoped<ITopicRepository, TopicRepository>();
 builder.Services.AddScoped<IRuleRepository, RuleRepository>();
 builder.Services.AddScoped<ISensorDataRepository, SensorDataRepository>();
 builder.Services.AddScoped<IMqttConnectionRepository, MqttConnectionRepository>();
+builder.Services.AddScoped<ISentDataRepository, SentDataRepository>();
+
 builder.Services.AddScoped<IAuthManager, AuthManager>();
 
 builder.Services.AddSingleton<IMqttClientManager, MqttClientManager>();
@@ -118,7 +120,9 @@ using (var scope = app.Services.CreateScope())
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
+        {
             await roleManager.CreateAsync(new IdentityRole(role));
+        }
     }
 }
 

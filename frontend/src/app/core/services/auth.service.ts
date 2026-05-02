@@ -1,11 +1,12 @@
-import { BaseApiService } from './base-api.service';
-import { Injectable } from '@angular/core';
+import {BaseApiService} from './base-api.service';
+import {Injectable, signal} from '@angular/core';
 import {Observable, tap} from 'rxjs';
 import {AuthModel, LoginModel, RegisterModel} from '../models/auth.model';
-import {DeviceModel} from '../models/device.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseApiService {
+  isLoggedInVar = signal(this.isLoggedIn());
+
   login(auth: LoginModel): Observable<AuthModel> {
     return this.http
       .post<AuthModel>(`${this.apiUrl}/auth/login`, auth)
@@ -58,7 +59,7 @@ export class AuthService extends BaseApiService {
       if (payload.exp * 1000 > Date.now()) {
         return true;
       } else {
-        this.logout();
+        // this.logout();
         return false;
       }
     } catch {

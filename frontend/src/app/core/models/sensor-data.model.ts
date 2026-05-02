@@ -6,8 +6,3 @@ export interface SensorDataModel {
   topicName: string;
   topicPath: string;
 }
-
-export interface SensorDataPageModel {
-  total: number;
-  sensorData: SensorDataModel[];
-}

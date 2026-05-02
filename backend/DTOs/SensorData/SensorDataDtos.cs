@@ -11,9 +11,3 @@ public class SensorDataDto
     public string TopicName { get; set; } = string.Empty;
     public string TopicPath { get; set; } = string.Empty;
 }
-
-public class CreateSensorDataDto
-{
-    public string RawPayload { get; set; } = string.Empty;
-    public int TopicId { get; set; }
-}

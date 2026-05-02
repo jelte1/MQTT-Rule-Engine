@@ -24,7 +24,9 @@ export class SignalrService extends BaseApiService{
 
     this.hubConnection.start()
       .then()
-      .catch(err => this.snack.open('SignalR Connection Error:', err));
+      .catch(err =>
+        this.snack.open('SignalR Connection Error:', err)
+      );
 
     this.hubConnection.on('SensorDataUpdate', (data: SensorDataModel) => {
       this.sensorDataSubject.next(data);

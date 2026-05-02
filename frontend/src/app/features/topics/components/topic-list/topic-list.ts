@@ -67,7 +67,7 @@ export class TopicList extends BaseTable<TopicModel> implements OnInit {
   displayedColumns: string[] = ['name', 'topicPath', 'description', 'deviceName', 'actions'];
 
   protected override defaultSortField(): string {
-    return 'createdAt';
+    return 'deviceName';
   }
 
   protected override fetchPage(page: TablePageModel): Observable<PageModel<TopicModel>> {
@@ -100,5 +100,9 @@ export class TopicList extends BaseTable<TopicModel> implements OnInit {
         });
       }
     });
+  }
+
+  showDevice(id: number): void {
+    this.router.navigate([`/devices/edit/${id}`]);
   }
 }

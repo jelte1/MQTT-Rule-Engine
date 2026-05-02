@@ -14,11 +14,16 @@ public class RuleConfiguration : IEntityTypeConfiguration<Rule>
         builder.HasOne(r => r.ConditionTopic)
             .WithMany(t => t.ConditionRules)
             .HasForeignKey(r => r.ConditionTopicId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(r => r.ActionTopic)
             .WithMany(t => t.ActionRules)
             .HasForeignKey(r => r.ActionTopicId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(r => r.ElseActionTopic)
+            .WithMany(t => t.ElseActionRules)
+            .HasForeignKey(r => r.ElseActionTopicId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

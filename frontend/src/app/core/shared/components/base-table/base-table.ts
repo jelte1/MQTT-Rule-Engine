@@ -2,7 +2,7 @@ import {Component, DestroyRef, inject, OnInit, signal} from '@angular/core';
 import {PageEvent} from '@angular/material/paginator';
 import {Sort} from '@angular/material/sort';
 import {debounceTime, distinctUntilChanged, Observable, Subject} from 'rxjs';
-import {PAGE_SIZE_OPTIONS, PageModel, TablePageModel} from '../../../models/table-page.model';
+import {PAGE_SIZE_OPTIONS, PageModel, SortOrder, TablePageModel} from '../../../models/table-page.model';
 import {MatTableDataSource} from '@angular/material/table';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
@@ -24,7 +24,7 @@ export abstract class BaseTable<T> implements OnInit {
     pageNumber: 0,
     pageSize: PAGE_SIZE_OPTIONS.MEDIUM,
     sortingField: this.defaultSortField(),
-    sortingOrder: 'desc',
+    sortingOrder: this.defaultSortOrder(),
     filterQuery: '',
     totalItems: 0
   });
@@ -34,6 +34,11 @@ export abstract class BaseTable<T> implements OnInit {
   // if no field given; then default to id
   protected defaultSortField(): string {
     return 'id';
+  }
+
+  // if no sort order gives; default to descending
+  protected defaultSortOrder(): SortOrder {
+    return 'desc';
   }
 
   // fetch data based on page model from the extending class

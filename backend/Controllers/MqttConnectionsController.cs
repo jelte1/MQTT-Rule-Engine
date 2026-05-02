@@ -152,7 +152,6 @@ public class MqttConnectionsController : ControllerBase
 
         try
         {
-            await _mqttClientManager.Disconnect(id);
             await _mqttClientManager.Connect(mqttConnection);
             return Ok(new { message = "Reconnected successfully" });
         }
@@ -210,13 +209,20 @@ public class MqttConnectionsController : ControllerBase
         
         var total = await _mqttConnectionRepository.GetTotalCount(userId, filterQuery);
         var mqttConnections = await _mqttConnectionRepository.GetPaginated(pageSize, (pageNumber * pageSize), sortingField, sortingOrder, filterQuery, userId);
+        
+        var mqttConnectionDtos = _mapper.Map<IEnumerable<MqttConnectionDto>>(mqttConnections);
 
-        var dto = new PageDto<MqttConnectionDto>()
+        foreach (var dto in mqttConnectionDtos)
+        {
+            dto.IsConnected = _mqttClientManager.IsConnected(dto.Id);
+        }
+        
+        var pageDto = new PageDto<MqttConnectionDto>()
         {
             Total = total,
-            Data = _mapper.Map<IEnumerable<MqttConnectionDto>>(mqttConnections)
+            Data = mqttConnectionDtos
         };
         
-        return Ok(dto);
+        return Ok(pageDto);
     }
 }

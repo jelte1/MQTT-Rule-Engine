@@ -7,11 +7,13 @@ export const PAGE_SIZE_OPTIONS = {
   ALL: [5, 10, 20, 50, 100],
 };
 
+export type SortOrder = "asc" | "desc" | "";
+
 export interface TablePageModel {
   pageSize: number;
   pageNumber: number;
   sortingField: string;
-  sortingOrder: "asc" | "desc" | "";
+  sortingOrder: SortOrder;
   filterQuery?: string;
   totalItems: number;
 }

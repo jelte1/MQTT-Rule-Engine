@@ -95,12 +95,11 @@ export class MqttConnectionList extends BaseTable<MqttConnectionModel> implement
 
   reconnect(id: number): void {
     this.mqttConnectionService.reconnectMqttConnection(id).subscribe({
-      next: () => {
+      next: (value) => {
         this.snack.open('Reconnection successful', 'Dismiss', { duration: 3000 });
         this.load();
       },
       error: (err: any) => {
-        console.log(err)
         this.snack.open('Reconnection failed: ' + err.error, 'Dismiss', { duration: 3000 });
         this.load();
       }

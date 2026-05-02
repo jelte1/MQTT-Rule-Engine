@@ -51,8 +51,3 @@ export interface CreateRuleModel {
   elseActionField: string;
   elseActionValue: string;
 }
-
-export interface RulePageModel {
-  total: number;
-  sensorData: RuleModel[];
-}

@@ -32,5 +32,7 @@ public class Topic
     public Device Device { get; set; } = null!;
     public ICollection<Rule> ConditionRules { get; set; } = new List<Rule>();
     public ICollection<Rule> ActionRules { get; set; } = new List<Rule>();
+    public ICollection<Rule> ElseActionRules { get; set; } = new List<Rule>();
     public ICollection<SensorData> SensorData { get; set; } = new List<SensorData>();
+    public ICollection<SentData> SentData { get; set; } = new List<SentData>();
 }

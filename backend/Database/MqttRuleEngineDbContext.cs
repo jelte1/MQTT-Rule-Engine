@@ -14,6 +14,7 @@ public class MqttRuleEngineDbContext : IdentityDbContext<User>
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Rule> Rules { get; set; }
     public DbSet<SensorData> SensorData { get; set; }
+    public DbSet<SentData> SentData { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 import {MqttConnectionList} from './features/mqttConnections/components/mqtt-connection-list/mqtt-connection-list';
 import {MqttConnectionForm} from './features/mqttConnections/components/mqtt-connection-form/mqtt-connection-form';
 import {Dashboard} from './features/dashboard/components/dashboard/dashboard';
@@ -12,6 +12,9 @@ import {Login} from './features/auth/components/login/login';
 import {Register} from './features/auth/components/register/register';
 import {authGuard} from './core/guards/auth.guard';
 import {SensorDataList} from './features/sensorData/components/sensor-data-list/sensor-data-list';
+import {SentDataList} from './features/sentData/components/sent-data-list/sent-data-list';
+import {SensorDataShow} from './features/sensorData/components/sensor-data-show/sensor-data-show';
+import {SentDataShow} from './features/sentData/components/sent-data-show/sent-data-show';
 
 export const routes: Routes = [
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
@@ -28,6 +31,9 @@ export const routes: Routes = [
   { path: 'rules/new', component: RuleForm, canActivate: [authGuard] },
   { path: 'rules/edit/:id', component: RuleForm, canActivate: [authGuard] },
   { path: 'sensordata', component: SensorDataList, canActivate: [authGuard] },
+  { path: 'sensordata/:id', component: SensorDataShow, canActivate: [authGuard] },
+  { path: 'sentdata', component: SentDataList, canActivate: [authGuard] },
+  { path: 'sentdata/:id', component: SentDataShow, canActivate: [authGuard] },
   { path: '', component: Login },
   { path: 'login', component: Login },
   { path: 'register', component: Register },

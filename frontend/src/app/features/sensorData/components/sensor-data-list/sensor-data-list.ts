@@ -23,6 +23,9 @@ import {MatIcon} from '@angular/material/icon';
 import {BaseTable} from '../../../../core/shared/components/base-table/base-table';
 import {PageModel, TablePageModel} from '../../../../core/models/table-page.model';
 import {map, Observable} from 'rxjs';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-sensor-data-list',
@@ -48,14 +51,17 @@ import {map, Observable} from 'rxjs';
     MatLabel,
     MatInput,
     MatIcon,
+    MatIconButton,
+    MatTooltip,
   ],
   templateUrl: './sensor-data-list.html',
   styleUrl: './sensor-data-list.css',
 })
 export class SensorDataList extends BaseTable<SensorDataModel> implements OnInit {
   private sensorDataService = inject(SensorDataService);
+  private router = inject(Router);
 
-  readonly displayedColumns = ['number', 'topicName', 'topicPath', 'rawPayload', 'receivedAt'];
+  readonly displayedColumns = ['number', 'topicName', 'topicPath', 'rawPayload', 'receivedAt', 'actions'];
 
   protected override defaultSortField(): string {
     return 'receivedAt';
@@ -65,5 +71,13 @@ export class SensorDataList extends BaseTable<SensorDataModel> implements OnInit
     return this.sensorDataService.getSensorDataPage(page).pipe(
       map(response => ({data: response.data, total: response.total}))
     );
+  }
+
+  showSensorData(id: number) {
+    this.router.navigate([`/sensordata/${id}`]);
+  }
+
+  showTopic(id: number) {
+    this.router.navigate([`/topics/edit/${id}`]);
   }
 }

@@ -55,7 +55,7 @@ form {
   width: 100%;
 }
 
-.connection-true {
+.connection-true, .status-0 {
   background-color: #109f10;
   padding: 0.2rem 0.4rem;
   border-radius: 1rem;
@@ -65,7 +65,7 @@ form {
   float: left;
 }
 
-.connection-false {
+.connection-false, .status-1 {
   background-color: #fd3636;
   padding: 0.2rem 0.4rem;
   color: #efefef;
@@ -135,4 +135,10 @@ code {
     width: 48px;
     height: 48px;
   }
+}
+
+.clickableCell {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #3f51b5;
 }

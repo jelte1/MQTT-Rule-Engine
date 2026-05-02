@@ -126,7 +126,7 @@ public class MqttClientManager : IMqttClientManager, IHostedService
                         .SendAsync("SensorDataUpdate", sensorDataDto);
                 }
 
-                await ruleEngineService.ProcessMessage(topic.Device.MqttConnection, topic, payload);
+                await ruleEngineService.ProcessMessage(topic.Device.MqttConnection, topic, sensorData, payload);
             };
 
             var optionsBuilder = new MqttClientOptionsBuilder()
@@ -154,19 +154,25 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             }
 
             var options = optionsBuilder.Build();
-            await client.ConnectAsync(options);
+            var ttt = await client.ConnectAsync(options);
+            // Console.WriteLine(await client.ConnectAsync(options));
+            
             _clients[connection.Id] = client;
 
             client.DisconnectedAsync += async e =>
             {
-                if (!e.ClientWasConnected) return;
+                if (!e.ClientWasConnected)
+                {
+                    return;
+                }
 
                 Console.WriteLine($"Client {connection.Id} disconnected: {e.Reason}. Reconnecting in 5s...");
                 await Task.Delay(TimeSpan.FromSeconds(5));
 
                 try
                 {
-                    await client.ConnectAsync(options);
+                    var ttt = await client.ConnectAsync(options);
+
                     await SubscribeTopics(client, connection.Id);
                     Console.WriteLine($"Reconnected to {connection.Host}:{connection.Port}");
                 }
@@ -255,6 +261,15 @@ public class MqttClientManager : IMqttClientManager, IHostedService
 
     public bool IsConnected(int mqttConnectionId)
     {        
-        return _clients.TryGetValue(mqttConnectionId, out var client) && client.IsConnected;
+        _lock.Wait();
+        try
+        {
+            var ttt = _clients.TryGetValue(mqttConnectionId, out var client) && client.IsConnected;
+            return ttt;
+        }
+        finally
+        {
+            _lock.Release();
+        }
     }
 }

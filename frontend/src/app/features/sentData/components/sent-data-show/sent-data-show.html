@@ -1,0 +1,93 @@
+<div class="page-header">
+  <h1>Sent Data Details</h1>
+  <button class="backButton" mat-icon-button matTooltip="Go back" (click)="back()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+</div>
+
+<mat-card class="margin-bottom">
+  <mat-card-content>
+    <p>See the details of data sent by the server on the IF or ELSE condition on one of your rules.</p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="margin-bottom">
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else if (sentData()) {
+    <mat-card-header class="margin-bottom">
+      <mat-card-title>Sent Data</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field class="full-width clickableCell" appearance="fill" (click)="showRule(sentData()?.ruleId)">
+        <mat-label>Rule</mat-label>
+        <input matInput [value]="sentData()?.ruleName" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Sent Topic Path</mat-label>
+        <input matInput [value]="sentData()?.sentTopicPath" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Payload</mat-label>
+        <code>
+          <textarea matInput [value]="sentData()?.payload" readonly></textarea>
+        </code>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Status</mat-label>
+        <input matInput [value]="sentData()?.status ? 'Failed' : 'Sent'" readonly>
+      </mat-form-field>
+
+      @if (sentData()?.errorMessage) {
+        <mat-form-field class="full-width" appearance="fill">
+          <mat-label>Error Message</mat-label>
+          <code>
+            <textarea matInput [value]="sentData()?.errorMessage" readonly></textarea>
+          </code>
+        </mat-form-field>
+      }
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Sent At</mat-label>
+        <input matInput [value]="sentData() ? (sentData()!.sentAt | refactorDate) : ''" readonly>
+      </mat-form-field>
+    </mat-card-content>
+  }
+</mat-card>
+
+<mat-card>
+  @if (sensorData()) {
+    <mat-card-header class="margin-bottom">
+      <mat-card-title>Origin Sensor Data</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Topic Name</mat-label>
+        <input matInput [value]="sensorData()?.topicName" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Topic Path</mat-label>
+        <input matInput [value]="sensorData()?.topicPath" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Payload</mat-label>
+        <code>
+          <textarea matInput [value]="sensorData()?.rawPayload" readonly rows="3"></textarea>
+        </code>
+      </mat-form-field>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button style="margin-left: 1rem; margin-bottom: 1rem" color="primary" mat-raised-button (click)="sensorData()?.id && showSensorData(sensorData()!.id)">
+        Show Sensor Data Details
+      </button>
+    </mat-card-actions>
+  }
+</mat-card>

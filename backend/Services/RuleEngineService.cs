@@ -14,7 +14,7 @@ public class RuleEngineService : IRuleEngineService
         _scopeFactory = scopeFactory;
     }
 
-    public async Task ProcessMessage(MqttConnection mqttConnection, Topic topic, string payload)
+    public async Task ProcessMessage(MqttConnection mqttConnection, Topic topic, SensorData sensorData, string payload)
     {
         using var scope = _scopeFactory.CreateScope();
         var ruleRepository = scope.ServiceProvider.GetRequiredService<IRuleRepository>();
@@ -30,10 +30,12 @@ public class RuleEngineService : IRuleEngineService
 
                 if (EvaluateCondition(rule, parsedPayload))
                 {
-                    await ExecuteAction(rule.ActionTopic, rule.ActionField, rule.ActionValue);
+                    await ExecuteAction(rule, sensorData, rule.ActionTopic, rule.ActionField, rule.ActionValue, SentDataType.Action);
+                    // await ExecuteAction(rule.ActionTopic, rule.ActionField, rule.ActionValue);
                 } else if (HasElseAction(rule))
                 {
-                    await ExecuteAction(rule.ElseActionTopic, rule.ElseActionField, rule.ElseActionValue);
+                    await ExecuteAction(rule, sensorData, rule.ElseActionTopic, rule.ElseActionField, rule.ElseActionValue, SentDataType.ElseAction);
+                    // await ExecuteAction(rule.ElseActionTopic, rule.ElseActionField, rule.ElseActionValue);
                 }
             }
             catch (Exception ex)
@@ -89,27 +91,48 @@ public class RuleEngineService : IRuleEngineService
         
         return false;
     }
-    private async Task ExecuteAction(Topic topic, string? field, string value)
+    private async Task ExecuteAction(Rule rule, SensorData sensorData, Topic topic, string field, string value, SentDataType type)
     {
         using var scope = _scopeFactory.CreateScope();
         var mqttClientManager = scope.ServiceProvider.GetRequiredService<IMqttClientManager>();
         var payloadParserService = scope.ServiceProvider.GetRequiredService<IPayloadParserService>();
+        var sentDataRepository = scope.ServiceProvider.GetRequiredService<ISentDataRepository>();
 
         if (field != null && !string.IsNullOrEmpty(value))
         {
+            var sentData = new SentData()
+            {
+                SentTopicId = topic.Id,
+                RuleId = rule.Id,
+                TriggerSensorDataId = sensorData.Id,
+                Payload = payloadParserService.Format(topic, field, value),
+                SentAt = DateTime.Now,
+                Type = type
+            };
+            
             try
             {
                 var actionPayload = payloadParserService.Format(topic, field, value);
                 
+                sentData.Payload = actionPayload;
+                
                 await mqttClientManager.Publish(topic, actionPayload);
+                
+                sentData.Status = SentDataStatus.Sent;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to execute action for rule: {ex.Message}");
+                
+                sentData.Status = SentDataStatus.Failed;
+                sentData.ErrorMessage = ex.Message;
             }
+            
+            await sentDataRepository.AddAsync(sentData);
+            await sentDataRepository.SaveChangesAsync();
         }
     }
-    
+
     private bool HasElseAction(Rule rule)
     {
         if (rule.ElseActionTopic != null && !string.IsNullOrEmpty(rule.ElseActionValue))

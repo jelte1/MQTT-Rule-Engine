@@ -1,0 +1,100 @@
+<div class="page-header">
+  <h1>Sensor Data Details</h1>
+  <button class="backButton" mat-icon-button matTooltip="Go back" (click)="back()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+</div>
+
+<mat-card class="margin-bottom">
+  <mat-card-content>
+    <p>See the details of a sensor data received by the server.<br> You can also see which actions were triggered from this data.</p>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="margin-bottom">
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else if (sensorData()) {
+    <mat-card-header class="margin-bottom">
+      <mat-card-title>Received on topic</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Topic Name</mat-label>
+        <input matInput [value]="sensorData()?.topicName" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Topic Path</mat-label>
+        <input matInput [value]="sensorData()?.topicPath" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>With Payload</mat-label>
+        <code>
+          <textarea matInput [value]="sensorData()?.rawPayload" readonly></textarea>
+        </code>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Received At</mat-label>
+        <input matInput [value]="sensorData() ? (sensorData()!.receivedAt | refactorDate) : ''" readonly>
+      </mat-form-field>
+    </mat-card-content>
+  }
+</mat-card>
+
+<mat-card>
+  @if (sentData().length > 0) {
+    <mat-card-header class="margin-bottom">
+      <mat-card-title>Actions triggered</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <table mat-table [dataSource]="sentData()" matSort>
+        <ng-container matColumnDef="number">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let sentData; let i = index">
+            {{ i + 1 }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="ruleName">
+          <th mat-header-cell *matHeaderCellDef>Rule</th>
+          <td mat-cell *matCellDef="let row" class="clickableCell" (click)="showRule(row.ruleId)">{{ row.ruleName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="sentTopicPath">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="sentTopicPath">Sent Topic path</th>
+          <td mat-cell *matCellDef="let row">{{ row.sentTopicPath }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="payload">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="payload">Sent Data (payload)</th>
+          <td mat-cell *matCellDef="let row" class="clickableCell" (click)="showSentData(row.id)"><code>{{ row.payload }}</code></td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="status">Status</th>
+          <td mat-cell *matCellDef="let sentData">
+            <span [class]="'status-' + sentData.status">
+              {{ sentData.status ? 'Failed' : 'Sent' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="sentDataColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: sentDataColumns"></tr>
+      </table>
+    </mat-card-content>
+  } @else {
+    <mat-card-header class="margin-bottom">
+      <mat-card-title>Actions triggered</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p>No actions triggered.</p>
+    </mat-card-content>
+  }
+</mat-card>

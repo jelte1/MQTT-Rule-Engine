@@ -26,6 +26,12 @@ public class SensorDataRepository : Repository<SensorData>, ISensorDataRepositor
             .Where(t => t.Topic.Device.MqttConnection.UserId == userId);
     }
     
+    public async Task<SensorData?> GetByIdAndUserIdAsync(int id, string userId)
+    {
+        return await UserQuery(userId)
+            .FirstOrDefaultAsync(t => t.Id == id);
+    }
+    
     public async Task<IEnumerable<SensorData>> GetLatest(int count, string userId)
     {
         var sensorData = await UserQuery(userId)

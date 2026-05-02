@@ -22,6 +22,27 @@ public class SensorDataController : ControllerBase
         _mapper = mapper;
     }
     
+    // GET: /api/sensordata/1
+    [HttpGet("{id}")]
+    public async Task<ActionResult<SensorDataDto>> GetById(int id)
+    {
+        var userId = User.GetLoggedInUserId();
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return NotFound();
+        }
+        
+        var sensorData = await _sensorDataRepository.GetByIdAndUserIdAsync(id, userId);
+        
+        if (sensorData == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(_mapper.Map<SensorDataDto>(sensorData));
+    }
+    
     // GET: /api/sensordata/latest/10
     [HttpGet("latest/{count}")]
     public async Task<ActionResult<IEnumerable<SensorDataDto>>> GetLatestSensorData(int count)

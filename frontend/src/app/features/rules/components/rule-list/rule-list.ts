@@ -23,7 +23,7 @@ import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
 import {MatDialog} from '@angular/material/dialog';
 import {ConfirmDialog, ConfirmDialogData} from '../../../../core/shared/components/confirm-dialog/confirm-dialog';
 import {BaseTable} from '../../../../core/shared/components/base-table/base-table';
-import {PageModel, TablePageModel} from '../../../../core/models/table-page.model';
+import {PageModel, SortOrder, TablePageModel} from '../../../../core/models/table-page.model';
 import {map, Observable} from 'rxjs';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
@@ -71,6 +71,10 @@ export class RuleList extends BaseTable<RuleModel> implements OnInit {
 
   protected override defaultSortField(): string {
     return 'isActive';
+  }
+
+  protected override defaultSortOrder(): SortOrder {
+    return 'asc';
   }
 
   protected override fetchPage(page: TablePageModel): Observable<PageModel<RuleModel>> {

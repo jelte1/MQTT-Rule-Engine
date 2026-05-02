@@ -4,5 +4,5 @@ namespace backend.Interfaces;
 
 public interface IRuleEngineService
 {
-    Task ProcessMessage(MqttConnection mqttConnection, Topic topic, string payload);
+    Task ProcessMessage(MqttConnection mqttConnection, Topic topic, SensorData sensorData, string payload);
 }

@@ -1,15 +1,9 @@
-import { inject } from '@angular/core';
-import {
-  HttpErrorResponse,
-  HttpEvent,
-  HttpHandlerFn,
-  HttpInterceptorFn,
-  HttpRequest
-} from '@angular/common/http';
-import { Observable, catchError, switchMap, throwError } from 'rxjs';
-import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
-import { INTERCEPTOR_EXCLUDED_URLS } from '../constants/constants';
+import {inject} from '@angular/core';
+import {HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest} from '@angular/common/http';
+import {catchError, Observable, switchMap, throwError} from 'rxjs';
+import {AuthService} from '../services/auth.service';
+import {Router} from '@angular/router';
+import {INTERCEPTOR_EXCLUDED_URLS} from '../constants/constants';
 
 export const refreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
   const authService = inject(AuthService);
@@ -36,7 +30,6 @@ export const refreshInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>,
     error: HttpErrorResponse,
   ) {
     const refreshToken = localStorage.getItem('refreshToken');
-
     if (!refreshToken) {
       return handleLogout(error);
     }

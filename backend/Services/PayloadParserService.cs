@@ -70,9 +70,9 @@ public class PayloadParserService : IPayloadParserService
     {
         var payload = topic.DataFormat switch
         {
-            DataFormat.Json => JsonSerializer.Serialize(
-                new Dictionary<string, object> { { field!, value } }),
-            DataFormat.Numeric => double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var num)
+            DataFormat.Json => JsonSerializer.Serialize(new Dictionary<string, object> { { field!, value } }),
+            DataFormat.Numeric => double.TryParse(value, 
+                NumberStyles.Any, CultureInfo.InvariantCulture, out var num) 
                 ? num.ToString(CultureInfo.InvariantCulture)
                 : value,
             DataFormat.PlainText => value,
