@@ -16,6 +16,7 @@ public class MqttConnection
     public string? Password { get; set; }
     public string? ClientId { get; set; }
     public bool UseTls { get; set; } = false;
+    public bool UseWebSocket { get; set; } = false;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public ICollection<Device> Devices { get; set; } = new List<Device>();

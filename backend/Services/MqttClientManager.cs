@@ -130,10 +130,22 @@ public class MqttClientManager : IMqttClientManager, IHostedService
             };
 
             var optionsBuilder = new MqttClientOptionsBuilder()
-                .WithTcpServer(connection.Host, connection.Port)
                 .WithCleanSession()
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
-
+            
+            if (connection.UseWebSocket)
+            {
+                // optionsBuilder.WithWebSocketServer($"wss://{connection.Host}:{connection.Port}/mqtt");
+                optionsBuilder.WithWebSocketServer((MqttClientWebSocketOptionsBuilder b) => 
+                {
+                    b.WithUri($"wss://{connection.Host}:{connection.Port}/mqtt");
+                });
+            }
+            else
+            {
+                optionsBuilder.WithTcpServer(connection.Host, connection.Port);
+            }
+            
             if (!string.IsNullOrEmpty(connection.ClientId))
             {
                 optionsBuilder.WithClientId(connection.ClientId);

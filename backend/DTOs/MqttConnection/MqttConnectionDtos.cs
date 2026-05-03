@@ -9,6 +9,7 @@ public class MqttConnectionDto
     public string? Username { get; set; }
     public string? ClientId { get; set; }
     public bool UseTls { get; set; }
+    public bool UseWebSocket { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
     public bool IsConnected { get; set; }
@@ -23,5 +24,6 @@ public class CreateUpdateMqttConnectionDto
     public string? Password { get; set; }
     public string? ClientId { get; set; }
     public bool UseTls { get; set; } = false;
+    public bool UseWebSocket { get; set; } = false;
     public bool IsActive { get; set; } = true;
 }

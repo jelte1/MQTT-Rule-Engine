@@ -92,4 +92,8 @@ export class DeviceList extends BaseTable<DeviceModel> {
       }
     });
   }
+
+  showMqttConnection(id: number): void {
+    this.router.navigate([`/mqttconnections/edit/${id}`]);
+  }
 }

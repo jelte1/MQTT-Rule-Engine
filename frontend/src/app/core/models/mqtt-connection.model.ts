@@ -6,6 +6,7 @@ export interface MqttConnectionModel {
   username?: string;
   clientId?: string;
   useTls: boolean;
+  useWebSocket: boolean;
   isActive: boolean;
   createdAt: string;
   isConnected: boolean;
@@ -19,6 +20,7 @@ export interface CreateMqttConnectionModel {
   password: string;
   clientId: string;
   useTls: boolean;
+  useWebSocket: boolean;
   isActive: boolean;
 }
 
@@ -30,5 +32,6 @@ export interface UpdateMqttConnectionModel {
   password?: string;
   clientId?: string;
   useTls: boolean;
+  useWebSocket: boolean;
   isActive: boolean;
 }
