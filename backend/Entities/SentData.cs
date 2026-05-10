@@ -9,7 +9,8 @@ public enum SentDataStatus
 public enum SentDataType
 {
     Action = 0,
-    ElseAction = 1
+    ElseAction = 1,
+    Variable = 2,
 }
 
 public class SentData
@@ -26,9 +27,12 @@ public class SentData
     public int SentTopicId { get; set; }
     public Topic SentTopic { get; set; } = null!;
     
-    public int RuleId { get; set; }
-    public Rule Rule { get; set; } = null!;
+    public int? RuleId { get; set; }
+    public Rule? Rule { get; set; } = null!;
     
-    public int TriggerSensorDataId { get; set; }
-    public SensorData TriggerSensorData { get; set; } = null!;
+    public int? TriggerSensorDataId { get; set; }
+    public SensorData? TriggerSensorData { get; set; } = null!;
+    
+    public int? VariableId { get; set; }
+    public Variable? Variable { get; set; }
 }

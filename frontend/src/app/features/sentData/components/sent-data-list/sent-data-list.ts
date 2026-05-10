@@ -61,7 +61,7 @@ export class SentDataList extends BaseTable<SentDataModel> implements OnInit {
   private sentDataService = inject(SentDataService);
   private router = inject(Router);
 
-  readonly displayedColumns = ['number', 'triggerSensorDataPayload', 'payload', 'status', 'sentAt', 'actions'];
+  readonly displayedColumns = ['number', 'trigger', 'payload', 'status', 'sentAt', 'actions'];
 
   protected override defaultSortField(): string {
     return 'sentAt';
@@ -82,5 +82,9 @@ export class SentDataList extends BaseTable<SentDataModel> implements OnInit {
 
   showSensorData(id: number) {
     this.router.navigate([`/sensordata/${id}`]);
+  }
+
+  showVariable(id: number) {
+    this.router.navigate([`/variables/edit/${id}`]);
   }
 }

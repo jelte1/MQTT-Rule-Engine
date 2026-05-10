@@ -16,7 +16,7 @@
     <mat-progress-spinner mode="indeterminate" diameter="30"/>
   } @else if (sensorData()) {
     <mat-card-header class="margin-bottom">
-      <mat-card-title>Received on topic</mat-card-title>
+      <mat-card-title>Received data on topic</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
@@ -62,7 +62,7 @@
 
         <ng-container matColumnDef="ruleName">
           <th mat-header-cell *matHeaderCellDef>Rule</th>
-          <td mat-cell *matCellDef="let row" class="clickableCell" (click)="showRule(row.ruleId)">{{ row.ruleName }}</td>
+          <td mat-cell *matCellDef="let row" class="clickableCell" matTooltip="Go to rule" (click)="showRule(row.ruleId)">{{ row.ruleName }}</td>
         </ng-container>
 
         <ng-container matColumnDef="sentTopicPath">
@@ -72,7 +72,7 @@
 
         <ng-container matColumnDef="payload">
           <th mat-header-cell *matHeaderCellDef mat-sort-header="payload">Sent Data (payload)</th>
-          <td mat-cell *matCellDef="let row" class="clickableCell" (click)="showSentData(row.id)"><code>{{ row.payload }}</code></td>
+          <td mat-cell *matCellDef="let row" class="clickableCell" matTooltip="Go to sent data" (click)="showSentData(row.id)"><code>{{ row.payload }}</code></td>
         </ng-container>
 
         <ng-container matColumnDef="status">

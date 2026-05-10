@@ -1,13 +1,16 @@
 <div class="page-header" >
-  <h1>Devices</h1>
-  <button mat-raised-button color="primary" routerLink="/devices/new">
-    <mat-icon>add</mat-icon> Add Device
+  <h1>Variables</h1>
+  <button mat-raised-button color="primary" routerLink="/variables/new">
+    <mat-icon>add</mat-icon> Add Variable
   </button>
 </div>
 
 <mat-card class="margin-bottom text-card">
   <mat-card-content>
-    <p>See all of the devices that are registered for your MQTT connections.</p>
+    <p>See all of the variables that are made on your topics.<br><br>
+    A variable is a value that is sent to your devices when they connect or disconnect
+    and when a variable is created or updated. You can use them to set configuration values
+    on your devices</p>
   </mat-card-content>
 </mat-card>
 
@@ -17,7 +20,7 @@
       <mat-form-field appearance="outline" class="filter-field" subscriptSizing="dynamic">
         <mat-label>Search</mat-label>
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput (keyup)="onFilterChange($event)" [value]="tablePage().filterQuery" placeholder="Name, description, connection..."/>
+        <input matInput (keyup)="onFilterChange($event)" [value]="tablePage().filterQuery" placeholder="Name, description..."/>
       </mat-form-field>
       <mat-paginator
         [pageSize]="tablePage().pageSize"
@@ -38,7 +41,7 @@
     } @else if (dataSource.data.length === 0) {
       <div class="empty-state">
         <mat-icon>devices_off</mat-icon>
-        <p>No devices configured. Add one to get started.</p>
+        <p>No variables made. Add one to get started.</p>
       </div>
     } @else {
       <table mat-table [dataSource]="dataSource" matSort
@@ -56,19 +59,22 @@
           <td mat-cell *matCellDef="let row">{{ row.description }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="connectionName">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="connectionName">MQTT Connection</th>
-          <td mat-cell *matCellDef="let row" class="clickableCell" matTooltip="Go to mqtt connection" (click)="showMqttConnection(row.mqttConnectionId)">{{ row.connectionName }}</td>
+        <ng-container matColumnDef="topicPath">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="topicPath">Topic Path</th>
+          <td mat-cell *matCellDef="let row" class="clickableCell" matTooltip="Go to topic" (click)="showTopic(row.topicId)">{{ row.topicPath }}</td>
         </ng-container>
 
-        <ng-container matColumnDef="createdAt">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="createdAt">Created At</th>
-          <td mat-cell *matCellDef="let row">{{ row.createdAt | refactorDate }}</td>
+        <ng-container matColumnDef="value">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="value">Value</th>
+          <td mat-cell *matCellDef="let row">{{ row.value }}</td>
         </ng-container>
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
           <td mat-cell *matCellDef="let row" class="actions">
+            <button mat-icon-button matTooltip="Resend" color="primary" (click)="resend(row.id)">
+              <mat-icon>redo</mat-icon>
+            </button>
             <button mat-icon-button matTooltip="Edit" (click)="edit(row.id)">
               <mat-icon>edit</mat-icon>
             </button>

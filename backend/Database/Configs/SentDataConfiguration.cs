@@ -21,8 +21,11 @@ public class SentDataConfiguration : IEntityTypeConfiguration<SentData>
                 .HasForeignKey(s => s.RuleId)
                 .OnDelete(DeleteBehavior.Cascade);
             
-
             builder.HasOne(s => s.TriggerSensorData)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasOne(s => s.Variable)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
         }

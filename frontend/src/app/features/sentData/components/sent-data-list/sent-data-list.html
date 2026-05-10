@@ -52,9 +52,16 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="triggerSensorDataPayload">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="triggerSensorDataPayload">Trigger Sensor Data</th>
-          <td mat-cell *matCellDef="let row" class="clickableCell" (click)="showSensorData(row.triggerSensorDataId)"><code>{{ row.triggerSensorDataPayload }}</code></td>
+        <ng-container matColumnDef="trigger">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="trigger" matTooltip="Trigger variable or sensor data">Trigger</th>
+          <td mat-cell *matCellDef="let row" class="clickableCell">
+            @if (row.variableId) {
+              <span matTooltip="Go to variable" (click)="showVariable(row.variableId)">{{ row.variableName }}</span>
+            } @else if (row.triggerSensorDataId) {
+              <code matTooltip="Go to sensor data" (click)="showSensorData(row.triggerSensorDataId)">{{ row.triggerSensorDataPayload }}</code>
+            }
+          </td>
+<!--          <td mat-cell *matCellDef="let row" class="clickableCell" matTooltip="Go to sensor data" (click)="showSensorData(row.triggerSensorDataId)"><code>{{ row.triggerSensorDataPayload }}</code></td>-->
         </ng-container>
 
         <ng-container matColumnDef="status">

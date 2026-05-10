@@ -57,7 +57,7 @@ public class DevicesController : ControllerBase
     
     // POST: /api/devices
     [HttpPost]
-    public async Task<ActionResult<Device>> CreateDevice(CreateDeviceDto dto)
+    public async Task<ActionResult<DeviceDto>> CreateDevice(CreateDeviceDto dto)
     {
         var userId = User.GetLoggedInUserId();
 
@@ -72,12 +72,12 @@ public class DevicesController : ControllerBase
         await _deviceRepository.AddAsync(device);
         await _deviceRepository.SaveChangesAsync();
         
-        return CreatedAtAction("CreateDevice", new { id = device.Id }, _mapper.Map<CreateDeviceDto>(device));
+        return CreatedAtAction("CreateDevice", new { id = device.Id }, _mapper.Map<DeviceDto>(device));
     }
     
     // PUT: /api/devices/1
     [HttpPut("{id}")]
-    public async Task<ActionResult<Device>> UpdateDevice(int id, CreateDeviceDto dto)
+    public async Task<ActionResult<DeviceDto>> UpdateDevice(int id, CreateDeviceDto dto)
     {
         var userId = User.GetLoggedInUserId();
 

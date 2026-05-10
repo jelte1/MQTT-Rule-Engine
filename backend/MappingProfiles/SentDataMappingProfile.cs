@@ -12,7 +12,8 @@ public class SentDataMappingProfile : Profile
             .ForMember(dest => dest.SentTopicName, opt => opt.MapFrom(src => src.SentTopic != null ? src.SentTopic.Name : string.Empty))
             .ForMember(dest => dest.SentTopicPath, opt => opt.MapFrom(src => src.SentTopic != null ? src.SentTopic.TopicPath : string.Empty))
             .ForMember(dest => dest.TriggerSensorDataPayload, opt => opt.MapFrom(src => src.TriggerSensorDataId != null ? src.TriggerSensorData.RawPayload : string.Empty))
-            .ForMember(dest => dest.RuleName, opt => opt.MapFrom(src => src.RuleId != null ? src.Rule.Name : string.Empty))
+            .ForMember(dest => dest.RuleName, opt => opt.MapFrom(src => src.RuleId != null ? src.Rule.Name : string.Empty)) 
+            .ForMember(dest => dest.VariableName, opt => opt.MapFrom(src => src.VariableId != null ? src.Variable.Name : string.Empty))
             .ReverseMap();
     }
 }

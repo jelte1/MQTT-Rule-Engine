@@ -33,6 +33,7 @@ public class Topic
     public ICollection<Rule> ConditionRules { get; set; } = new List<Rule>();
     public ICollection<Rule> ActionRules { get; set; } = new List<Rule>();
     public ICollection<Rule> ElseActionRules { get; set; } = new List<Rule>();
+    public ICollection<Variable> Variables { get; set; } = new List<Variable>();
     public ICollection<SensorData> SensorData { get; set; } = new List<SensorData>();
     public ICollection<SentData> SentData { get; set; } = new List<SentData>();
 }

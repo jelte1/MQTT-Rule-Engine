@@ -20,10 +20,13 @@
     </mat-card-header>
 
     <mat-card-content>
-      <mat-form-field class="full-width clickableCell" appearance="fill" (click)="showRule(sentData()?.ruleId)">
-        <mat-label>Rule</mat-label>
-        <input matInput [value]="sentData()?.ruleName" readonly>
-      </mat-form-field>
+
+      @if (sentData()?.ruleId) {
+        <mat-form-field class="full-width clickableCell" appearance="fill" (click)="showRule(sentData()?.ruleId)">
+          <mat-label>Rule</mat-label>
+          <input matInput [value]="sentData()?.ruleName" readonly>
+        </mat-form-field>
+      }
 
       <mat-form-field class="full-width" appearance="fill">
         <mat-label>Sent Topic Path</mat-label>
@@ -87,6 +90,35 @@
     <mat-card-actions>
       <button style="margin-left: 1rem; margin-bottom: 1rem" color="primary" mat-raised-button (click)="sensorData()?.id && showSensorData(sensorData()!.id)">
         Show Sensor Data Details
+      </button>
+    </mat-card-actions>
+  } @else if (variable()) {
+    <mat-card-header class="margin-bottom">
+      <mat-card-title>Origin Variable</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput [value]="variable()?.name" readonly>
+      </mat-form-field>
+
+      <mat-form-field class="full-width" appearance="fill">
+        <mat-label>Value</mat-label>
+        <input matInput [value]="variable()?.value" readonly>
+      </mat-form-field>
+
+      @if (variable()?.field) {
+        <mat-form-field class="full-width" appearance="fill">
+          <mat-label>Field (JSON key)</mat-label>
+          <input matInput [value]="variable()?.field" readonly>
+        </mat-form-field>
+      }
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button style="margin-left: 1rem; margin-bottom: 1rem" color="primary" mat-raised-button (click)="variable()?.id && showVariable(variable()!.id)">
+        Show Variable Details
       </button>
     </mat-card-actions>
   }

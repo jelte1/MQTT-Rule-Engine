@@ -15,6 +15,8 @@ import {SensorDataList} from './features/sensorData/components/sensor-data-list/
 import {SentDataList} from './features/sentData/components/sent-data-list/sent-data-list';
 import {SensorDataShow} from './features/sensorData/components/sensor-data-show/sensor-data-show';
 import {SentDataShow} from './features/sentData/components/sent-data-show/sent-data-show';
+import {VariablesList} from './features/variables/variables-list/variables-list';
+import {VariableForm} from './features/variables/variables-form/variable-form';
 
 export const routes: Routes = [
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
@@ -34,6 +36,9 @@ export const routes: Routes = [
   { path: 'sensordata/:id', component: SensorDataShow, canActivate: [authGuard] },
   { path: 'sentdata', component: SentDataList, canActivate: [authGuard] },
   { path: 'sentdata/:id', component: SentDataShow, canActivate: [authGuard] },
+  { path: 'variables', component: VariablesList, canActivate: [authGuard] },
+  { path: 'variables/new', component: VariableForm, canActivate: [authGuard] },
+  { path: 'variables/edit/:id', component: VariableForm, canActivate: [authGuard] },
   { path: '', component: Login },
   { path: 'login', component: Login },
   { path: 'register', component: Register },

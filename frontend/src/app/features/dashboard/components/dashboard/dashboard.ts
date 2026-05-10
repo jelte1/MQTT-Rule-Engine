@@ -9,14 +9,17 @@ import {
   MatColumnDef,
   MatHeaderCell,
   MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
   MatTable
 } from '@angular/material/table';
 import {MatProgressSpinner} from '@angular/material/progress-spinner';
 import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
 import {SignalrService} from '../../../../core/services/signalr.service';
-import {take} from 'rxjs';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {MatTooltip} from '@angular/material/tooltip';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,7 +40,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
     MatRow,
     MatRowDef,
     MatProgressSpinner,
-    RefactorDatePipe
+    RefactorDatePipe,
+    MatTooltip
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -48,6 +52,7 @@ export class Dashboard implements OnInit, OnDestroy {
   private readonly sensorDataService = inject(SensorDataService);
   private snack = inject(MatSnackBar);
   private readonly signalrService = inject(SignalrService);
+  private router = inject(Router);
 
   sensorData = signal<SensorDataModel[]>([]);
   loading = signal(false);
@@ -87,5 +92,13 @@ export class Dashboard implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.signalrService.stopConnection();
+  }
+
+  showTopic(topicId: number) {
+    this.router.navigate([`/topics/edit/${topicId}`]);
+  }
+
+  showSensorData(sensorDataId: number) {
+    this.router.navigate([`/sensordata/${sensorDataId}`]);
   }
 }

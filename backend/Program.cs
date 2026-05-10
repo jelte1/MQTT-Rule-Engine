@@ -45,6 +45,7 @@ builder.Services.AddScoped<IRuleRepository, RuleRepository>();
 builder.Services.AddScoped<ISensorDataRepository, SensorDataRepository>();
 builder.Services.AddScoped<IMqttConnectionRepository, MqttConnectionRepository>();
 builder.Services.AddScoped<ISentDataRepository, SentDataRepository>();
+builder.Services.AddScoped<IVariableRepository, VariableRepository>();
 
 builder.Services.AddScoped<IAuthManager, AuthManager>();
 
@@ -56,6 +57,7 @@ builder.Services.AddHostedService<MqttClientManager>(x => x
 
 builder.Services.AddScoped<IRuleEngineService, RuleEngineService>();
 builder.Services.AddSingleton<IPayloadParserService, PayloadParserService>();
+builder.Services.AddScoped<IVariableSevice, VariableService>();
 
 builder.Services.AddAuthentication(options =>
 {

@@ -30,6 +30,7 @@ export class App implements OnInit {
     { label: 'Devices', icon: 'devices', route: '/devices' },
     { label: 'Topics', icon: 'folder', route: '/topics' },
     { label: 'Rules', icon: 'rule', route: '/rules' },
+    { label: 'Variables', icon: 'tune', route: '/variables' },
     { label: 'Sensor Data', icon: 'data_object', route: '/sensordata' },
     { label: 'Sent Data', icon: 'send', route: '/sentdata' },
   ];

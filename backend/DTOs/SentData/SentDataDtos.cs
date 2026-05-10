@@ -22,4 +22,7 @@ public class SentDataDto
 
     public int TriggerSensorDataId { get; set; }
     public string TriggerSensorDataPayload { get; set; }  = string.Empty;
+    
+    public int VariableId { get; set; }
+    public string VariableName { get; set; }  = string.Empty;
 }

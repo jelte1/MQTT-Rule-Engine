@@ -21,6 +21,14 @@ p {
   align-items: center;
   padding: 1.5rem 1.5rem 0.5rem 1.5rem;
 }
+
+@media (max-width: 500px) {
+  .page-header {
+    gap: 1rem;
+    flex-direction: column;
+  }
+}
+
 .page-header h1 {
   margin: 0;
 }
@@ -144,5 +152,5 @@ code {
 }
 
 .text-card {
-  width: max-content;
+  width: fit-content;
 }

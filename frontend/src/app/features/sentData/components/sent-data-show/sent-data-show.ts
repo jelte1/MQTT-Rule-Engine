@@ -11,6 +11,8 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {SentDataModel} from '../../../../core/models/sent-data.model';
 import {SensorDataModel} from '../../../../core/models/sensor-data.model';
 import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
+import {VariableService} from '../../../../core/services/variable.service';
+import {VariableModel} from '../../../../core/models/variable.model';
 
 @Component({
   selector: 'app-sent-data-show',
@@ -36,12 +38,15 @@ import {RefactorDatePipe} from '../../../../core/pipes/refactorDate.pipe';
 export class SentDataShow implements OnInit {
   private sentDataService = inject(SentDataService);
   private sensorDataService = inject(SensorDataService);
+  private variableService = inject(VariableService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   loading = signal(false);
   sentData = signal<SentDataModel | null>(null);
   sensorData = signal<SensorDataModel | null>(null);
+  variable = signal<VariableModel | null>(null);
+
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -58,6 +63,14 @@ export class SentDataShow implements OnInit {
             },
             error: () => this.loading.set(false)
           });
+        } else if (data.variableId) {
+          this.variableService.getVariable(data.variableId).subscribe({
+            next: (variable) => {
+              this.variable.set(variable);
+              this.loading.set(false);
+            },
+            error: () => this.loading.set(false)
+          })
         } else {
           this.loading.set(false);
         }
@@ -79,5 +92,9 @@ export class SentDataShow implements OnInit {
 
   showRule(id: number | undefined): void {
     this.router.navigate([`/rules/edit/${id}`]);
+  }
+
+  showVariable(id: number | undefined): void {
+    this.router.navigate([`/variables/edit/${id}`]);
   }
 }

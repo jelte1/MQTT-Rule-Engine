@@ -54,7 +54,7 @@
 
           <ng-container matColumnDef="topicName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header="topicName">Topic name</th>
-            <td mat-cell *matCellDef="let row" class="clickableCell" (click)="showTopic(row.topicId)">{{ row.topicName }}</td>
+            <td mat-cell *matCellDef="let row" class="clickableCell" matTooltip="Go to topic" (click)="showTopic(row.topicId)">{{ row.topicName }}</td>
           </ng-container>
 
           <ng-container matColumnDef="topicPath">

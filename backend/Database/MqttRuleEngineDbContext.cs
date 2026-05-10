@@ -13,6 +13,7 @@ public class MqttRuleEngineDbContext : IdentityDbContext<User>
     public DbSet<Device> Devices { get; set; }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<Rule> Rules { get; set; }
+    public DbSet<Variable> Variables { get; set; }
     public DbSet<SensorData> SensorData { get; set; }
     public DbSet<SentData> SentData { get; set; }
 

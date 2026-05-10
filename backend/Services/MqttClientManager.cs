@@ -69,137 +69,137 @@ public class MqttClientManager : IMqttClientManager, IHostedService
 
     public async Task Connect(MqttConnection connection)
     {
+        if (_clients.TryGetValue(connection.Id, out var existing))
+        {
+            if (existing.IsConnected)
+            {
+                await existing.DisconnectAsync();
+            }
+
+            existing.Dispose();
+            _clients.Remove(connection.Id);
+        }
+
+        var factory = new MqttFactory();
+        var client = factory.CreateMqttClient();
+
+        // receiving messages from mqtt
+        client.ApplicationMessageReceivedAsync += async e =>
+        {
+            var topicPath = e.ApplicationMessage.Topic;
+            var payload = e.ApplicationMessage.ConvertPayloadToString() ?? string.Empty;
+
+            using var scope = _scopeFactory.CreateScope();
+            var sensorDataRepository = scope.ServiceProvider.GetRequiredService<ISensorDataRepository>();
+            var topicRepository = scope.ServiceProvider.GetRequiredService<ITopicRepository>();
+            var ruleEngineService = scope.ServiceProvider.GetRequiredService<IRuleEngineService>();
+
+            var topic = await topicRepository.GetByPathAndMqttConnectionAsync(topicPath, connection.Id);
+
+            if (topic == null)
+            {
+                return;
+            }
+
+            var sensorData = await sensorDataRepository.AddAsync(
+                new SensorData
+                {
+                    RawPayload = payload,
+                    ReceivedAt = DateTime.Now,
+                    TopicId = topic.Id
+                }
+            );
+            await sensorDataRepository.SaveChangesAsync();
+
+            var sensorDataDto = _mapper.Map<SensorDataDto>(sensorData);
+
+            var userId = topic.Device.MqttConnection.UserId;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _sensorDataHubContext
+                    .Clients
+                    .Group(userId)
+                    .SendAsync("SensorDataUpdate", sensorDataDto);
+            }
+
+            await ruleEngineService.ProcessMessage(topic.Device.MqttConnection, topic, sensorData, payload);
+        };
+
+        var optionsBuilder = new MqttClientOptionsBuilder()
+            .WithCleanSession()
+            .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
+        
+        if (connection.UseWebSocket)
+        {
+            // optionsBuilder.WithWebSocketServer($"wss://{connection.Host}:{connection.Port}/mqtt");
+            optionsBuilder.WithWebSocketServer((MqttClientWebSocketOptionsBuilder b) => 
+            {
+                b.WithUri($"wss://{connection.Host}:{connection.Port}/mqtt");
+            });
+        }
+        else
+        {
+            optionsBuilder.WithTcpServer(connection.Host, connection.Port);
+        }
+        
+        if (!string.IsNullOrEmpty(connection.ClientId))
+        {
+            optionsBuilder.WithClientId(connection.ClientId);
+        }
+        else
+        {
+            optionsBuilder.WithClientId("MqttRuleEngine-" + connection.Id + "-" + Guid.NewGuid());
+        }
+
+        if (!string.IsNullOrEmpty(connection.Username))
+        {
+            optionsBuilder.WithCredentials(connection.Username, connection.Password ?? string.Empty);
+        }
+
+        if (connection.UseTls)
+        {
+            optionsBuilder.WithTlsOptions(o => o.UseTls());
+        }
+
+        var options = optionsBuilder.Build();
+        
         await _lock.WaitAsync();
         try
         {
-            if (_clients.TryGetValue(connection.Id, out var existing))
-            {
-                if (existing.IsConnected)
-                {
-                    await existing.DisconnectAsync();
-                }
-
-                existing.Dispose();
-                _clients.Remove(connection.Id);
-            }
-
-            var factory = new MqttFactory();
-            var client = factory.CreateMqttClient();
-
-            // receiving messages from mqtt
-            client.ApplicationMessageReceivedAsync += async e =>
-            {
-                var topicPath = e.ApplicationMessage.Topic;
-                var payload = e.ApplicationMessage.ConvertPayloadToString() ?? string.Empty;
-
-                using var scope = _scopeFactory.CreateScope();
-                var sensorDataRepository = scope.ServiceProvider.GetRequiredService<ISensorDataRepository>();
-                var topicRepository = scope.ServiceProvider.GetRequiredService<ITopicRepository>();
-                var ruleEngineService = scope.ServiceProvider.GetRequiredService<IRuleEngineService>();
-
-                var topic = await topicRepository.GetByPathAndMqttConnectionAsync(topicPath, connection.Id);
-
-                if (topic == null)
-                {
-                    return;
-                }
-
-                var sensorData = await sensorDataRepository.AddAsync(
-                    new SensorData
-                    {
-                        RawPayload = payload,
-                        ReceivedAt = DateTime.Now,
-                        TopicId = topic.Id
-                    }
-                );
-                await sensorDataRepository.SaveChangesAsync();
-
-                var sensorDataDto = _mapper.Map<SensorDataDto>(sensorData);
-
-                var userId = topic.Device.MqttConnection.UserId;
-
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    await _sensorDataHubContext
-                        .Clients
-                        .Group(userId)
-                        .SendAsync("SensorDataUpdate", sensorDataDto);
-                }
-
-                await ruleEngineService.ProcessMessage(topic.Device.MqttConnection, topic, sensorData, payload);
-            };
-
-            var optionsBuilder = new MqttClientOptionsBuilder()
-                .WithCleanSession()
-                .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
-            
-            if (connection.UseWebSocket)
-            {
-                // optionsBuilder.WithWebSocketServer($"wss://{connection.Host}:{connection.Port}/mqtt");
-                optionsBuilder.WithWebSocketServer((MqttClientWebSocketOptionsBuilder b) => 
-                {
-                    b.WithUri($"wss://{connection.Host}:{connection.Port}/mqtt");
-                });
-            }
-            else
-            {
-                optionsBuilder.WithTcpServer(connection.Host, connection.Port);
-            }
-            
-            if (!string.IsNullOrEmpty(connection.ClientId))
-            {
-                optionsBuilder.WithClientId(connection.ClientId);
-            }
-            else
-            {
-                optionsBuilder.WithClientId("MqttRuleEngine-" + connection.Id + "-" + Guid.NewGuid());
-            }
-
-            if (!string.IsNullOrEmpty(connection.Username))
-            {
-                optionsBuilder.WithCredentials(connection.Username, connection.Password ?? string.Empty);
-            }
-
-            if (connection.UseTls)
-            {
-                optionsBuilder.WithTlsOptions(o => o.UseTls());
-            }
-
-            var options = optionsBuilder.Build();
             var ttt = await client.ConnectAsync(options);
-            // Console.WriteLine(await client.ConnectAsync(options));
-            
-            _clients[connection.Id] = client;
-
-            client.DisconnectedAsync += async e =>
-            {
-                if (!e.ClientWasConnected)
-                {
-                    return;
-                }
-
-                Console.WriteLine($"Client {connection.Id} disconnected: {e.Reason}. Reconnecting in 5s...");
-                await Task.Delay(TimeSpan.FromSeconds(5));
-
-                try
-                {
-                    var ttt = await client.ConnectAsync(options);
-
-                    await SubscribeTopics(client, connection.Id);
-                    Console.WriteLine($"Reconnected to {connection.Host}:{connection.Port}");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Reconnect failed for connection {connection.Id}: {ex.Message}");
-                }
-            };
-
-            await SubscribeTopics(client, connection.Id);
         }
         finally
         {
             _lock.Release();
         }
+        
+        _clients[connection.Id] = client;
+
+        client.DisconnectedAsync += async e =>
+        {
+            if (!e.ClientWasConnected)
+            {
+                return;
+            }
+
+            Console.WriteLine($"Client {connection.Id} disconnected: {e.Reason}. Reconnecting in 5s...");
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            try
+            {
+                var ttt = await client.ConnectAsync(options);
+
+                await SubscribeTopics(client, connection.Id);
+                Console.WriteLine($"Reconnected to {connection.Host}:{connection.Port}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Reconnect failed for connection {connection.Id}: {ex.Message}");
+            }
+        };
+
+        await SubscribeTopics(client, connection.Id);
     }
 
     public async Task Disconnect(int mqttConnectionId)

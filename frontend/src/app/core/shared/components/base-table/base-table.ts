@@ -66,6 +66,7 @@ export abstract class BaseTable<T> implements OnInit {
 
     this.fetchPage(this.tablePage()).subscribe({
       next: ({data, total}) => {
+        console.log(data);
         this.dataSource.data = data;
         this.tablePage.update(tp => ({
           ...tp,

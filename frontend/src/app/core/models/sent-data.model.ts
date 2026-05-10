@@ -1,6 +1,7 @@
 export enum SentDataType {
   Action = 0,
-  ElseAction = 1
+  ElseAction = 1,
+  Variable = 2
 }
 
 export enum SentDataStatus
@@ -23,4 +24,6 @@ export interface SentDataModel {
   ruleName: string;
   triggerSensorDataId: number;
   triggerSensorDataPayload: string;
+  variableId: number;
+  variableName: string;
 }

@@ -1,0 +1,50 @@
+<div class="page-header">
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else {
+    <h1>{{ isEditMode() ? 'Edit Variable' : 'Create new Variable' }}</h1>
+  }
+</div>
+
+<mat-card>
+  @if (loading()) {
+    <mat-progress-spinner mode="indeterminate" diameter="30"/>
+  } @else {
+    <form (ngSubmit)="submit()">
+      <mat-form-field class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="cool name" [formField]="variableForm.name">
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Description</mat-label>
+        <input matInput placeholder="cool description" [formField]="variableForm.description">
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Value</mat-label>
+        <input matInput placeholder="value to send" [formField]="variableForm.value">
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Field (JSON key, optional)</mat-label>
+        <input matInput placeholder="timeout" [formField]="variableForm.field">
+      </mat-form-field>
+
+      <mat-form-field class="full-width">
+        <mat-label>Topic</mat-label>
+        <mat-select [formField]="variableForm.topicId">
+          @for (t of topics; track t.id) {
+            <mat-option [value]="t.id">{{ t.name }} ({{ t.topicPath }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" [disabled]="variableForm().invalid()">{{ isEditMode() ? 'Edit' : 'Create' }}</button>
+        <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      </div>
+
+    </form>
+  }
+</mat-card>

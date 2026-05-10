@@ -28,6 +28,7 @@ public class SentDataRepository : Repository<SentData>, ISentDataRepository
     {
         return await UserQuery(userId)
             .Include(r => r.Rule)
+            .Include(s => s.Variable)
             .FirstOrDefaultAsync(t => t.Id == id);
     }
     
@@ -36,6 +37,7 @@ public class SentDataRepository : Repository<SentData>, ISentDataRepository
         return await UserQuery(userId)
             .Include(s => s.TriggerSensorData)
             .Include(r => r.Rule)
+            .Include(s => s.Variable)
             .Where(sd => sd.TriggerSensorDataId == sensorDataId)
             .ToListAsync();
     }
@@ -44,6 +46,7 @@ public class SentDataRepository : Repository<SentData>, ISentDataRepository
     {
         var sensorData = await UserQuery(userId)
             .OrderByDescending(sd => sd.SentAt)
+            .Include(s => s.Variable)
             .Take(count)
             .ToListAsync();
         return sensorData;
@@ -64,6 +67,7 @@ public class SentDataRepository : Repository<SentData>, ISentDataRepository
         
         var sentData = await query
             .Include(s => s.TriggerSensorData)
+            .Include(v => v.Variable)
             .ApplySort(validSortField, validSortOrder)
             .Skip(offset)
             .Take(size)
