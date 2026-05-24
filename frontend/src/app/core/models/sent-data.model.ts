@@ -1,5 +1,5 @@
 export enum SentDataType {
-  Action = 0,
+  action = 0,
   ElseAction = 1,
   Variable = 2
 }

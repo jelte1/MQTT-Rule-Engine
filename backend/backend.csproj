@@ -27,4 +27,12 @@
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.2" />
     </ItemGroup>
 
+
+  <!-- Exclude the nested test project from the main build -->
+  <ItemGroup>
+    <Compile Remove="backend.Tests/**" />
+    <None Remove="backend.Tests/**" />
+    <Content Remove="backend.Tests/**" />
+    <EmbeddedResource Remove="backend.Tests/**" />
+  </ItemGroup>
 </Project>

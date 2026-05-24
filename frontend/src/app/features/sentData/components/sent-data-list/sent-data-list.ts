@@ -61,7 +61,7 @@ export class SentDataList extends BaseTable<SentDataModel> implements OnInit {
   private sentDataService = inject(SentDataService);
   private router = inject(Router);
 
-  readonly displayedColumns = ['number', 'trigger', 'payload', 'status', 'sentAt', 'actions'];
+  readonly displayedColumns = ['number', 'trigger', 'payload', 'status', 'sentAt', 'Actions'];
 
   protected override defaultSortField(): string {
     return 'sentAt';

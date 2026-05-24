@@ -1,16 +1,20 @@
-import { Component, inject, signal } from '@angular/core';
+import {Component, inject, signal} from '@angular/core';
 import {
-  MatCard, MatCardActions, MatCardContent,
-  MatCardHeader, MatCardSubtitle, MatCardTitle
+  MatCard,
+  MatCardActions,
+  MatCardContent,
+  MatCardHeader,
+  MatCardSubtitle,
+  MatCardTitle
 } from '@angular/material/card';
 import {Router, RouterLink} from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormField, MatInput, MatLabel } from '@angular/material/input';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatFormField, MatInput, MatLabel} from '@angular/material/input';
 import {form, FormField, required, validate} from '@angular/forms/signals';
-import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
-import { AuthService } from '../../../../core/services/auth.service';
-import { RegisterModel } from '../../../../core/models/auth.model';
+import {MatButton} from '@angular/material/button';
+import {MatIcon} from '@angular/material/icon';
+import {AuthService} from '../../../../core/services/auth.service';
+import {RegisterModel} from '../../../../core/models/auth.model';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({

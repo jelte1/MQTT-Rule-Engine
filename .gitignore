@@ -1,0 +1,11 @@
+/backend/backend.Tests/bin
+/backend/backend.Tests/obj
+/backend/bin
+/backend/.idea
+/backend/obj
+/backend/.env
+/frontend/.angular
+/frontend/.vscode
+/frontend/node_modules
+.idea
+.git
