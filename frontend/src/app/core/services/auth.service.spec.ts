@@ -130,6 +130,30 @@ describe('AuthService', () => {
     });
   });
 
+  describe('isLoggedInVar signal', () => {
+    it('should set isLoggedInVar to true after successful login', () => {
+      const credentials = { username: 'user1', password: 'pass123' };
+      const mockResponse = { token: 'jwt-token', userId: 'uid-1', refreshToken: 'rt-token' };
+
+      expect(service.isLoggedInVar()).toBe(false);
+
+      service.login(credentials).subscribe();
+      httpMock.expectOne(`${service['apiUrl']}/auth/login`).flush(mockResponse);
+
+      expect(service.isLoggedInVar()).toBe(true);
+    });
+
+    it('should set isLoggedInVar to false after logout', () => {
+      // Simulate a logged-in state by setting the signal directly
+      service.isLoggedInVar.set(true);
+      expect(service.isLoggedInVar()).toBe(true);
+
+      service.logout();
+
+      expect(service.isLoggedInVar()).toBe(false);
+    });
+  });
+
   describe('refreshToken', () => {
     it('should POST to /auth/refreshtoken with current credentials', () => {
       // arrange

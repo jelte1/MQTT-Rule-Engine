@@ -48,7 +48,7 @@ export class App implements OnInit {
     ),
     { initialValue: false }
   );
-  isLoggedIn = signal(this.authService.isLoggedInVar);
+  isLoggedIn = this.authService.isLoggedInVar;
 
   toggleSidenav() {
     this.sidenavOpened.set(!this.sidenavOpened());
