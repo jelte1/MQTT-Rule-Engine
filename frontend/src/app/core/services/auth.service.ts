@@ -15,6 +15,7 @@ export class AuthService extends BaseApiService {
           localStorage.setItem('token', response.token);
           localStorage.setItem('userId', response.userId);
           localStorage.setItem('refreshToken', response.refreshToken);
+          this.isLoggedInVar.set(true);
         }),
       );
   }
@@ -43,6 +44,7 @@ export class AuthService extends BaseApiService {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('refreshToken');
+    this.isLoggedInVar.set(false);
   }
 
   isLoggedIn(): boolean {
