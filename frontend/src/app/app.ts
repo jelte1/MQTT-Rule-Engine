@@ -14,8 +14,10 @@ import {AuthService} from './core/services/auth.service';
 @Component({
   selector: 'app-root',
   imports: [
-    RouterOutlet, RouterLink, RouterLinkActive,
-    MatToolbarModule, MatSidenavModule, MatListModule, MatIconModule, MatButtonModule, MatTooltip
+    RouterOutlet, RouterLink,
+    MatToolbarModule, MatSidenavModule,
+    MatListModule, MatIconModule,
+    MatButtonModule, MatTooltip, RouterLinkActive
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'

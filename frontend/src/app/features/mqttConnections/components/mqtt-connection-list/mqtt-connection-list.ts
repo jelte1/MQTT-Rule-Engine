@@ -55,7 +55,7 @@ export class MqttConnectionList extends BaseTable<MqttConnectionModel> implement
   private snack = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['name', 'host', 'status', 'actions'];
+  displayedColumns: string[] = ['name', 'host', 'status', 'Actions'];
 
   protected override defaultSortField(): string {
     return 'isActive';

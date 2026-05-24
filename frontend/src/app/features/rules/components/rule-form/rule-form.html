@@ -53,10 +53,10 @@
         </mat-form-field>
       </div>
 
-      <h3>THEN (Action)</h3>
+      <h3>THEN (Actions)</h3>
 
       <mat-form-field class="full-width">
-        <mat-label>Action Topic</mat-label>
+        <mat-label>Actions Topic</mat-label>
         <mat-select [formField]="ruleForm.actionTopicId">
           @for (t of topics; track t.id) {
             <mat-option [value]="t.id">{{ t.name }} ({{ t.topicPath }})</mat-option>

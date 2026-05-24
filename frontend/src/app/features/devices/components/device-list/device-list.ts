@@ -55,7 +55,7 @@ export class DeviceList extends BaseTable<DeviceModel> {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['name', 'description', 'connectionName', 'createdAt', 'actions'];
+  displayedColumns: string[] = ['name', 'description', 'connectionName', 'createdAt', 'Actions'];
 
   protected override defaultSortField(): string {
     return 'connectionName';

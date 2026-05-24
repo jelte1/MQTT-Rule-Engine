@@ -67,7 +67,7 @@ export class RuleList extends BaseTable<RuleModel> implements OnInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['name', 'description', 'createdAt', 'isActive', 'actions'];
+  displayedColumns: string[] = ['name', 'description', 'createdAt', 'isActive', 'Actions'];
 
   protected override defaultSortField(): string {
     return 'isActive';

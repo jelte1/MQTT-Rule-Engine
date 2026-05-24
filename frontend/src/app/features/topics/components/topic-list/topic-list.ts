@@ -64,7 +64,7 @@ export class TopicList extends BaseTable<TopicModel> implements OnInit {
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['name', 'topicPath', 'description', 'deviceName', 'actions'];
+  displayedColumns: string[] = ['name', 'topicPath', 'description', 'deviceName', 'Actions'];
 
   protected override defaultSortField(): string {
     return 'deviceName';

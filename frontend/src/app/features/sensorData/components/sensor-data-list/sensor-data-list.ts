@@ -61,7 +61,7 @@ export class SensorDataList extends BaseTable<SensorDataModel> implements OnInit
   private sensorDataService = inject(SensorDataService);
   private router = inject(Router);
 
-  readonly displayedColumns = ['number', 'topicName', 'topicPath', 'rawPayload', 'receivedAt', 'actions'];
+  readonly displayedColumns = ['number', 'topicName', 'topicPath', 'rawPayload', 'receivedAt', 'Actions'];
 
   protected override defaultSortField(): string {
     return 'receivedAt';

@@ -66,7 +66,7 @@ export class VariablesList extends BaseTable<VariableModel> {
   private dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
 
-  displayedColumns: string[] = ['name', 'description', 'topicPath', 'value', 'actions'];
+  displayedColumns: string[] = ['name', 'description', 'topicPath', 'value', 'Actions'];
 
   protected override defaultSortField(): string {
     return 'topicPath';
